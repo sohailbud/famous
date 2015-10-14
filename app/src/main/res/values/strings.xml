@@ -1,0 +1,43 @@
+<resources>
+    <string name="app_name">Famous</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_login">LoginActivity</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="createdTimeFormat">yyyyMMdd_HHmmss</string>
+
+    <string name="signup">SIGN UP</string>
+    <string name="login">LOGIN</string>
+    <string name="loginWithFacebook">Log in with Facebook</string>
+    <string name="enterYourEmail">Enter your email</string>
+    <string name="disclosureStatement">By signing up, yo agree to our Terms and Privacy Policy</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="suggestionsForYou">SUGGESTIONS FOR YOU</string>
+    <string name="viewAll">VIEW ALL</string>
+    <string name="follow">+ FOLLOW</string>
+    <string name="following">FOLLOWING</string>
+    <string name="addComment">Add a comment</string>
+    <string name="next">Next</string>
+    <string name="addFullName">Add your full name (optional)</string>
+    <string name="choseUsername">Choose a username</string>
+    <string name="createPassword">Create a password</string>
+    <string name="forgot">Forgot?</string>
+    <string name="nameFragment">NAME</string>
+    <string name="usernameFragment">USERNAME</string>
+    <string name="passwordFragment">PASSWORD</string>
+
+    <string name="importFromFacebook">Import from Facebook</string>
+    <string name="takePhoto">Take Photo</string>
+    <string name="chooseFromLibrary">Choose from Library</string>
+    <string name="importFromTwitter">Import from Twitter</string>
+
+    <string name="suggestedForYou"> SUGGESTED FOR YOU</string>
+    <string name="posts">posts</string>
+    <string name="followers">followers</string>
+    <string name="title_activity_access">AccessActivity</string>
+    <string name="title_activity_user">UserActivity</string>
+</resources>

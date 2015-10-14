@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.android.famous.fragment.common.UserPlusThreePostsFragment">
+
+    <include
+        android:id="@+id/userBar"
+        layout="@layout/fragment_user_list_item"/>
+
+    <TextView
+        android:id="@+id/userPlusThreePostsBio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:text="SAMPLE TEXT"
+        android:layout_below="@+id/userBar"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="5dp"
+        android:layout_below="@+id/userPlusThreePostsDescription">
+
+        <ImageView
+            android:id="@+id/userPlusThreePostsItemImage1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_weight=".33"
+            android:paddingRight="5dp"
+            android:src="@drawable/postimage"/>
+
+        <ImageView
+            android:id="@+id/userPlusThreePostsItemImage2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_weight=".33"
+            android:paddingRight="5dp"
+            android:src="@drawable/postimage"/>
+
+        <ImageView
+            android:id="@+id/userPlusThreePostsItemImage3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_weight=".33"
+            android:src="@drawable/postimage"/>
+
+
+
+
+    </LinearLayout>
+
+</RelativeLayout>
