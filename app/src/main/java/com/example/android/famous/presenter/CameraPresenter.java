@@ -88,7 +88,7 @@ public class CameraPresenter {
                     parseFile.save();
 
                     feedParse.put("Location", locationParse);
-                    feedParse.put("User", ParseUser.getCurrentUser());
+                    feedParse.put("createdBy", ParseUser.getCurrentUser());
                     feedParse.put("Media", parseFile.getUrl());
 
                     feedParse.save();

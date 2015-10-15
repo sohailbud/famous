@@ -85,19 +85,20 @@ public class UserListRecyclerViewAdapter
         public void userRelationshipsUpdated(boolean successfullyUpdated, String status) {
 
             final String FOLLOW = "FOLLOW";
-            final String UNFOLLOW = "UNFOLLOW";
+            final String UN_FOLLOW = "UN_FOLLOW";
 
             String follow = context.getResources().getString(R.string.follow);
             String following = context.getResources().getString(R.string.following);
 
-            if (successfullyUpdated && status.equals(UNFOLLOW)) {
+            if (successfullyUpdated && status.equals(UN_FOLLOW)) {
                 userListFollow.setText(following);
-                userListFollow.setTag(UNFOLLOW);
+                userListFollow.setTag(UN_FOLLOW);
             }
             else if (successfullyUpdated && status.equals(FOLLOW)) {
                 userListFollow.setText(follow);
                 userListFollow.setTag(FOLLOW);
             }
+            userListFollow.setClickable(true);
         }
 
         @Override
@@ -108,6 +109,7 @@ public class UserListRecyclerViewAdapter
 
             homeFragmentPresenter.updateUserRelationships(
                     this, data.get(position).getObjectId(), v.getTag().toString());
+            v.setClickable(false);
         }
 
 

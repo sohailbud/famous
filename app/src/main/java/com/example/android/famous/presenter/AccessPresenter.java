@@ -51,7 +51,7 @@ public class AccessPresenter {
 
                 if (e == null) {
                     signUp.newUserCreateDone(true, null);
-                    newUserDetails.put("user", newUser.getObjectId());
+                    newUserDetails.put("User", newUser);
                     newUserDetails.setACL(ACL);
                     newUserDetails.saveInBackground(new SaveCallback() {
                         @Override

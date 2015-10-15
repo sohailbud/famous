@@ -1,19 +1,24 @@
 package com.example.android.famous.presenter;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
+import com.example.android.famous.callback.FeedDataListener;
 import com.example.android.famous.callback.UpdateUserRelationshipsResponse;
+import com.example.android.famous.model.Feed;
 import com.example.android.famous.model.User;
 import com.example.android.famous.callback.SuggestedUserDataListener;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseRelation;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by Sohail on 9/24/15.
@@ -31,6 +36,7 @@ public class HomeFragmentPresenter {
 
     /**
      * Create static instance of current class
+     *
      * @return return static instance of current class
      */
     public static HomeFragmentPresenter getInstance() {
@@ -40,137 +46,124 @@ public class HomeFragmentPresenter {
 
     /**
      * Executes the AsyncTask to fetch suggested user data from parse
+     *
      * @param instance instance of interface that received the callback data
      */
     public void getSuggestedUserData(SuggestedUserDataListener instance) {
-        SuggestedUserDataAsyncTask suggestedUserData = new SuggestedUserDataAsyncTask();
-        suggestedUserData.delegate = instance;
-        suggestedUserData.execute();
+        GetSuggestedUserDataAsyncTask getSuggestedUserData = new GetSuggestedUserDataAsyncTask();
+        getSuggestedUserData.delegate = instance;
+        getSuggestedUserData.execute();
     }
 
     /**
      * Executes the AsyncTask to update user relationship arrays on parse
+     *
      * @param instance instance of interface that received the callback data
      * @param objectId objectId of user current user clicked on
-     * @param status current tag associated with the button (FOLLOW / UNFOLLOW)
+     * @param status   current tag associated with the button (FOLLOW / UNFOLLOW)
      */
     public void updateUserRelationships(
             UpdateUserRelationshipsResponse instance, String objectId, String status) {
-
-        UpdateUserRelationships updateUserRelationships = new UpdateUserRelationships();
+        UpdateUserRelationshipsAsyncTask updateUserRelationships = new UpdateUserRelationshipsAsyncTask();
         updateUserRelationships.delegate = instance;
         updateUserRelationships.execute(objectId, status);
     }
 
+    public void getFeedData(FeedDataListener instance) {
+        GetFeedDataAsyncTask getFeedData = new GetFeedDataAsyncTask();
+        getFeedData.delegate = instance;
+        getFeedData.execute();
+    }
+
     /**
-     * AsyncTask class to get fetch the suggestion data from parse in background
+     * 1. AsyncTask class to fetch the suggestion data from parse in background
      */
-    private class SuggestedUserDataAsyncTask extends AsyncTask<Void, Void, SuggestedUserDataAsyncTask.Wrapper> {
+    private class GetSuggestedUserDataAsyncTask extends AsyncTask<Void, Void, List<User>> {
 
         // Callback variable
         private SuggestedUserDataListener delegate = null;
 
         /**
          * Query all users data from parse
+         *
          * @param params null
          * @return list of all ParseUsers and current parse user's Details object
          */
         @Override
-        protected Wrapper doInBackground(Void... params) {
+        protected List<User> doInBackground(Void... params) {
 
             // list of all parse users
             ParseQuery<ParseUser> parseUserQuery = ParseUser.getQuery();
             List<ParseUser> parseUserList = null;
-
-            // UserDetails of current user
-            ParseQuery<ParseObject> parseUserDetailsQuery = ParseQuery.getQuery("UserDetails");
-            parseUserDetailsQuery.whereEqualTo("user", ParseUser.getCurrentUser().getObjectId());
-            ParseObject parseUserDetails = null;
-
-            // fetch the data from parse
             try {
                 parseUserList = parseUserQuery.find();
-                parseUserDetails = parseUserDetailsQuery.getFirst();
             } catch (ParseException e) {
                 e.printStackTrace();
             }
 
-            // store data in wrapper class
-            Wrapper wrapper = new Wrapper();
-            wrapper.parseUserList = parseUserList;
-            wrapper.parseUserDetails = parseUserDetails;
+            // Build query to get current user details
+            ParseQuery<ParseObject> parseCurrentUserDetailsQuery = ParseQuery.getQuery("UserDetails");
+            parseCurrentUserDetailsQuery.whereEqualTo("User", ParseUser.getCurrentUser());
 
-            return wrapper;
+            List<ParseUser> currentUserFollowsList = new ArrayList<>();
+            try {
+                // get current user details object
+                ParseObject parseCurrentUserDetails = parseCurrentUserDetailsQuery.getFirst();
+
+                // build relation query and get current user's follows list
+                ParseRelation<ParseUser> currentUserRelationFollows = parseCurrentUserDetails.getRelation("follows");
+                ParseQuery query = currentUserRelationFollows.getQuery();
+                currentUserFollowsList.addAll(query.find());
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            // add current user to the follows list to make checking easy
+            currentUserFollowsList.add(ParseUser.getCurrentUser());
+
+            // empty list to pass User objects
+            List<User> userList = new ArrayList<>();
+
+            // filter out parse users that current user is not following from complete users list
+            if (parseUserList != null) {
+                for (ParseUser parseUser : parseUserList) {
+                    if (!currentUserFollowsList.contains(parseUser)) {
+                        userList.add(new User(parseUser.getObjectId(),
+                                parseUser.getUsername(), parseUser.get("fullName").toString()));
+                    }
+                }
+            }
+
+            return userList;
         }
 
         /**
          * Convert parse users to regular users and insert them in a list while ignoring current user
          * Call the callback method to pass the data
-         * @param wrapper consists list of all ParseUsers and current parse user's Details object
+         *
+         * @param userList consists list of all ParseUsers
          */
         @Override
-        protected void onPostExecute(Wrapper wrapper) {
-            super.onPostExecute(wrapper);
-
-            // extract data form wrapper class
-            List<ParseUser> parseUserList = wrapper.parseUserList;
-            ParseObject parseUserDetails = wrapper.parseUserDetails;
-
-            // create a list containing ObjectId of current user and every user current user follows
-            List<String> userFollowsList = new ArrayList<>();
-            userFollowsList.add(ParseUser.getCurrentUser().getObjectId());
-            try {
-                userFollowsList.addAll((List<String>) parseUserDetails.get("follows"));
-            } catch (NullPointerException e) {
-                e.printStackTrace();
-            }
-
-            // using above list, create a new list of Users which current user is not following
-            List<User> users = new ArrayList<>();
-            for (ParseUser parseUser : parseUserList) {
-                if (!userFollowsList.contains(parseUser.getObjectId())) {
-                    User user = new User(parseUser.getObjectId(),
-                            parseUser.getUsername(),
-                            parseUser.get("fullName").toString());
-
-                    users.add(user);
-                }
-            }
+        protected void onPostExecute(List<User> userList) {
+            super.onPostExecute(userList);
 
             // add data to callback variable
-            delegate.suggestedUserDataOnProcess(users);
-        }
-
-        /**
-         * Wrapper class to pass two values from doInBackground to onPostExecute
-         */
-        protected class Wrapper {
-            private List<ParseUser> parseUserList;
-            private ParseObject parseUserDetails;
+            delegate.suggestedUserDataOnProcess(userList);
         }
     }
 
     /**
-     * AsyncTask class to update user relationships on parse in background
+     * 2. AsyncTask class to update user relationships on parse in background
      */
-    private class UpdateUserRelationships extends AsyncTask<String, Void, UpdateUserRelationships.Wrapper> {
+    private class UpdateUserRelationshipsAsyncTask extends AsyncTask<String, Void, UpdateUserRelationshipsAsyncTask.Wrapper> {
 
         // Callback variable
         private UpdateUserRelationshipsResponse delegate = null;
 
         /**
-         * Gets data from doInBackground and sets it to callback method
-         * @param wrapper boolean for parse update, updated status for future requests
-         */
-        @Override
-        protected void onPostExecute(Wrapper wrapper) {
-            super.onPostExecute(wrapper);
-
-            delegate.userRelationshipsUpdated(wrapper.successfullyUpdated, wrapper.status);
-        }
-
-        /**
          * Updates relationship arrays in UserDetails object of users involved
+         *
          * @param params contains object id of user current user clicked on, status to FOLLOW or UNFOLLOW
          * @return true if arrays were updated successfully on parse, true/false based on to follow or to unfollow
          */
@@ -179,69 +172,78 @@ public class HomeFragmentPresenter {
 
             String status = params[1]; // intended change on relationship status
             final String FOLLOW = "FOLLOW";
-            final String UNFOLLOW = "UNFOLLOW";
+            final String UN_FOLLOW = "UN_FOLLOW";
 
             // store results in wrapper class
             Wrapper results = new Wrapper();
 
-            // array containing objectId of current user and other user
-            String[] filter = {ParseUser.getCurrentUser().getObjectId(), params[0]};
-            // List to hold UserDetails object of these two users
-            List<ParseObject> parseUserDetailsObjectList;
+            // Get other user object
+            ParseQuery<ParseUser> parseUserQuery = ParseUser.getQuery();
+            ParseUser parseOtherUser = null;
+            try {
+                parseOtherUser = parseUserQuery.get(params[0]);
+            } catch (ParseException e) {
+                e.printStackTrace();
+                results.successfullyUpdated = false;
 
-            // Query UserDetails object of these two users
-            ParseQuery<ParseObject> userDetailsQuery = ParseQuery.getQuery("UserDetails");
-            userDetailsQuery.whereContainedIn("user", Arrays.asList(filter));
+            }
+
+            // Get current user and other user details object
+            // Create query to get user details
+            ParseQuery<ParseObject> parseCurrentUserDetailsQuery = ParseQuery.getQuery("UserDetails");
+            ParseQuery<ParseObject> parseOtherUserDetailsQuery = ParseQuery.getQuery("UserDetails");
+
+            // Condition the user details query
+            parseCurrentUserDetailsQuery.whereEqualTo("User", ParseUser.getCurrentUser());
+            parseOtherUserDetailsQuery.whereEqualTo("User", parseOtherUser);
 
             try {
-                parseUserDetailsObjectList = userDetailsQuery.find();
+                // get the user details object
+                ParseObject parseCurrentUserDetails = parseCurrentUserDetailsQuery.getFirst();
+                ParseObject parseOtherUserDetails = parseOtherUserDetailsQuery.getFirst();
 
-                // checks to see if UserDetails object for both users were fetched
-                if (parseUserDetailsObjectList.size() == 2) {
+                // Create current and other user relation object
+                ParseRelation<ParseUser> currentUserRelationFollows = parseCurrentUserDetails.getRelation("follows");
+                ParseRelation<ParseUser> otherUserRelationFollowedBy = parseOtherUserDetails.getRelation("followedBy");
 
-                    // loop through current user and other user's details object
-                    for (int i = 0; i < 2; i++) {
-                        ParseObject parseUserDetailsObject = parseUserDetailsObjectList.get(i);
+                // update relationship based on current user's requested change
+                if (status.equals(FOLLOW)) {
+                    currentUserRelationFollows.add(parseOtherUser);
+                    otherUserRelationFollowedBy.add(ParseUser.getCurrentUser());
+                    results.status = UN_FOLLOW;
 
-                        // based on current user's intended change to Follow or Un Follow other user
-                        // "follows" array current user and "followedBy" of other user gets updated
-                        if (status.equals(FOLLOW)) {
-                            if (parseUserDetailsObject.get("user").equals(filter[1]))
-                                parseUserDetailsObject.add("followedBy", filter[0]);
-                            else if (parseUserDetailsObject.get("user").equals(filter[0]))
-                                parseUserDetailsObject.add("follows", filter[1]);
-
-                            // update the status for future requests
-                            results.status = UNFOLLOW;
-
-                        } else if (status.equals(UNFOLLOW)) {
-                            if (parseUserDetailsObject.get("user").equals(filter[1]))
-                                parseUserDetailsObject.removeAll("followedBy", Collections.singletonList(filter[0]));
-                            else if (parseUserDetailsObject.get("user").equals(filter[0]))
-                                parseUserDetailsObject.removeAll("follows", Collections.singletonList(filter[1]));
-
-                            results.status = FOLLOW;
-                        }
-                        // Update the list with updated data in UserDetails object
-                        parseUserDetailsObjectList.set(i, parseUserDetailsObject);
-                    }
-                    // Save the data to parse
-                    ParseObject.saveAll(parseUserDetailsObjectList);
-                    results.successfullyUpdated = true;
-                    return results;
-
-                } else {
-                    // if user details object list doesnt contain object for both users
-                    results.successfullyUpdated = false;
-                    return results;
+                } else if (status.equals(UN_FOLLOW)) {
+                    currentUserRelationFollows.remove(parseOtherUser);
+                    otherUserRelationFollowedBy.remove(ParseUser.getCurrentUser());
+                    results.status = FOLLOW;
                 }
+
+                // Save both user details object
+                parseCurrentUserDetails.save();
+                parseOtherUserDetails.save();
+
+                results.successfullyUpdated = true;
 
             } catch (ParseException e) {
                 e.printStackTrace();
                 results.successfullyUpdated = false;
-                return results;
             }
+
+            return results;
+
         }
+
+        /**
+         * Gets data from doInBackground and sets it to callback method
+         *
+         * @param wrapper boolean for parse update, updated status for future requests
+         */
+        @Override
+        protected void onPostExecute(Wrapper wrapper) {
+            super.onPostExecute(wrapper);
+            delegate.userRelationshipsUpdated(wrapper.successfullyUpdated, wrapper.status);
+        }
+
 
         /**
          * Wrapper class to pass two values from doInBackground to onPostExecute
@@ -251,4 +253,47 @@ public class HomeFragmentPresenter {
             private String status;
         }
     }
+
+    /**
+     * 3. AsyncTask class to fetch feed dara from parse in background
+     */
+    private class GetFeedDataAsyncTask extends AsyncTask<Void, Void, List<ParseObject>> {
+
+        private FeedDataListener delegate = null;
+
+        @Override
+        protected List<ParseObject> doInBackground(Void... params) {
+
+//            // UserDetails of current user
+//            List<ParseObject> parseUserDetailsList = getParseUserDetails(
+//                    new String[] {ParseUser.getCurrentUser().getObjectId()}, 1);
+//
+//            List<String> followsList = null;
+//            if (parseUserDetailsList != null) {
+//                followsList = (List<String>) parseUserDetailsList.get(0).get("follows");
+//            }
+//
+//            List<ParseObject> parseFeedDataList = getParseFeedData(followsList);
+//
+//            // Convert parse Feed object to java Feed objects
+//            if (parseFeedDataList != null) {
+//                List<Feed> feedDataList = new ArrayList<>();
+//
+//                for (ParseObject parseFeedData : parseFeedDataList) {
+////                    User user = new User();
+////                    Feed feed = new Feed(null, );
+//                }
+//            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(List<ParseObject> parseFeedDataList) {
+            super.onPostExecute(parseFeedDataList);
+
+
+        }
+    }
+
 }
