@@ -47,7 +47,7 @@ public class PostFeedRecyclerViewAdapter extends RecyclerView.Adapter<PostFeedRe
         viewHolder.postAvatar.setImageResource(currentData.getUser().getProfilePicture());
         viewHolder.postUserName.setText(currentData.getUser().getUsername());
         viewHolder.postTime.setText(currentData.getCreatedTime());
-        viewHolder.postImage.setImageResource(currentData.getMedia());
+        viewHolder.postImage.setImageBitmap(currentData.getMedia());
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {

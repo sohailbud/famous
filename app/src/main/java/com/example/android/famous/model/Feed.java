@@ -1,5 +1,7 @@
 package com.example.android.famous.model;
 
+import android.graphics.Bitmap;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,14 +14,14 @@ public class Feed {
     String createdTime;
     Location location;
     User user;
-    int media;
+    Bitmap media;
 
     List<Comment> commentList = new ArrayList<>();
     List<User> likesList = new ArrayList<>();
     List<String> tags = new ArrayList<>();
     List<User> usersInPhoto = new ArrayList<>();
 
-    public Feed(Location location, User user, int media) {
+    public Feed(Location location, User user, Bitmap media) {
         this.location = location;
         this.user = user;
         this.media = media;
@@ -57,11 +59,11 @@ public class Feed {
         this.user = user;
     }
 
-    public int getMedia() {
+    public Bitmap getMedia() {
         return media;
     }
 
-    public void setMedia(int media) {
+    public void setMedia(Bitmap media) {
         this.media = media;
     }
 

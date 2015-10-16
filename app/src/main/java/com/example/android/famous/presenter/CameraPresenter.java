@@ -51,11 +51,6 @@ public class CameraPresenter {
         }
 
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
         protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
             Log.i("RESULT", aBoolean.toString());
