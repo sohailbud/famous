@@ -44,7 +44,7 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
         Feed currentData = feedData.get(position);
         viewHolder.postAvatar.setImageResource(currentData.getUser().getProfilePicture());
         viewHolder.postUserName.setText(currentData.getUser().getUsername());
-        viewHolder.postTime.setText(currentData.getCreatedTime());
+        viewHolder.postTime.setText(currentData.getCreatedAt());
         viewHolder.postImage.setImageBitmap(currentData.getMedia());
 
     }

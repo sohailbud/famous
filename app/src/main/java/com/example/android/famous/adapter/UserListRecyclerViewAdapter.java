@@ -109,8 +109,8 @@ public class UserListRecyclerViewAdapter
             int position = -1;
             if (getAdapterPosition() == getLayoutPosition()) position = getAdapterPosition();
 
-            homeFragmentPresenter.updateUserRelationships(
-                    this, data.get(position).getObjectId(), v.getTag().toString());
+//            homeFragmentPresenter.updateUserRelationships(
+//                    this, data.get(position).getObjectId(), v.getTag().toString());
             v.setClickable(false);
         }
 

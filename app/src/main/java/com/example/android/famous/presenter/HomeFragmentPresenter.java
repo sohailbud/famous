@@ -1,5 +1,6 @@
 package com.example.android.famous.presenter;
 
+import com.example.android.famous.adapter.FeedRecyclerViewAdapter;
 import com.example.android.famous.callback.FeedFragmentInterface;
 import com.example.android.famous.interactor.FeedDataInteractor;
 import com.example.android.famous.model.Feed;
@@ -13,6 +14,7 @@ import java.util.List;
 public class HomeFragmentPresenter implements FeedFragmentInterface {
 
     private static HomeFragmentPresenter homeFragmentPresenter = null;
+    private FeedRecyclerViewAdapter feedRecyclerViewAdapter;
 
     /**
      * Empty constructor
@@ -32,24 +34,19 @@ public class HomeFragmentPresenter implements FeedFragmentInterface {
 
     @Override
     public void feedDataOnProcess(List<Feed> feedList) {
+        if (feedRecyclerViewAdapter != null) feedRecyclerViewAdapter.swap(feedList);
+
+    }
+
+    public void fetchDataForAdapter(FeedRecyclerViewAdapter feedRecyclerViewAdapter) {
         FeedDataInteractor.GetFeedDataTask feedDataTask = new FeedDataInteractor(). new GetFeedDataTask();
         feedDataTask.execute();
+        this.feedRecyclerViewAdapter = feedRecyclerViewAdapter;
+
+        // get current sql data
     }
 
-    public void getFeedData(FeedData) {
 
-    }
-
-//    /**
-//     * Executes the AsyncTask to fetch suggested user data from parse
-//     *
-//     * @param instance instance of interface that received the callback data
-//     */
-//    public void getSuggestedUserData(SuggestedUserDataListener instance) {
-//        GetSuggestedUserDataAsyncTask getSuggestedUserData = new GetSuggestedUserDataAsyncTask();
-//        getSuggestedUserData.delegate = instance;
-//        getSuggestedUserData.execute();
-//    }
 //
 //    /**
 //     * Executes the AsyncTask to update user relationship arrays on parse

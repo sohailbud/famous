@@ -13,6 +13,7 @@ import com.example.android.famous.R;
 import com.example.android.famous.adapter.FeedRecyclerViewAdapter;
 import com.example.android.famous.callback.FeedFragmentInterface;
 import com.example.android.famous.model.Feed;
+import com.example.android.famous.presenter.HomeFragmentPresenter;
 
 import java.util.List;
 
@@ -23,7 +24,6 @@ public class FeedFragment extends Fragment {
 
     RecyclerView postFeedRecyclerView;
     FeedRecyclerViewAdapter postFeedRecyclerViewAdapter;
-    List<Feed> feedData;
 
     public FeedFragment() {
         // Required empty public constructor
@@ -35,20 +35,18 @@ public class FeedFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_feed, container, false);
 
-//        final LinearLayoutManager linearLayoutManager = new
-//                com.example.android.famous.util.LinearLayoutManager(
-//                getActivity(), LinearLayoutManager.VERTICAL, false);
-
         postFeedRecyclerView = (RecyclerView) view.findViewById(R.id.postFeedItemContainer);
-        postFeedRecyclerViewAdapter = new FeedRecyclerViewAdapter(getActivity(), feedData);
+        postFeedRecyclerViewAdapter = new FeedRecyclerViewAdapter(getActivity(), null);
         postFeedRecyclerView.setAdapter(postFeedRecyclerViewAdapter);
         postFeedRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-//        postFeedRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), null));
+
+        HomeFragmentPresenter homeFragmentPresenter = HomeFragmentPresenter.getInstance();
+        homeFragmentPresenter.fetchDataForAdapter(postFeedRecyclerViewAdapter);
 
         return view;
     }
 
-    public void setFeedData(List<Feed> feedData) {
-        this.feedData = feedData;
-    }
+
+
+
 }

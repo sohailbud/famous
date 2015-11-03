@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HomeFragment extends Fragment implements SuggestedUserDataListener, FeedDataListener {
+public class HomeFragment extends Fragment implements SuggestedUserDataListener {
 
     // presenter instance
     HomeFragmentPresenter homeFragmentPresenter = HomeFragmentPresenter.getInstance();
@@ -47,18 +47,12 @@ public class HomeFragment extends Fragment implements SuggestedUserDataListener,
     public void suggestedUserDataOnProcess(List<User> data) {
         FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
         UserListFragment userListFragment = new UserListFragment();
-//        userListFragment.setUserData(data);
+        userListFragment.setUserData(data);
         fragmentTransaction.add(R.id.fragmentHomeSuggestionsFeedContainer, userListFragment);
         fragmentTransaction.commit();
 
-        }
-
-    @Override
-    public void feedDataOnProcess(List<Feed> data) {
-        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
-        FeedFragment feedFragment = new FeedFragment();
-        feedFragment.setFeedData(data);
-        fragmentTransaction.add(R.id.fragmentHomePostFeedContainer, feedFragment);
-        fragmentTransaction.commit();
     }
+
+
+
 }
