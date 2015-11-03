@@ -20,9 +20,4 @@ public class UserPresenter {
         if (userPresenter == null) userPresenter = new UserPresenter();
         return userPresenter;
     }
-
-
-
-
-
 }

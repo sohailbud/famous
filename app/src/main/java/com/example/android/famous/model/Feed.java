@@ -10,16 +10,15 @@ import java.util.List;
  */
 public class Feed {
 
-    int id;
-    String createdTime;
-    Location location;
-    User user;
-    Bitmap media;
+    private String objectId;
+    private String createdAt;
+    private Location location;
+    private User user;
+    private Bitmap media;
+    private String tags;
 
-    List<Comment> commentList = new ArrayList<>();
-    List<User> likesList = new ArrayList<>();
-    List<String> tags = new ArrayList<>();
-    List<User> usersInPhoto = new ArrayList<>();
+    private List<Comment> commentList = new ArrayList<>();
+    private List<User> likesList = new ArrayList<>();
 
     public Feed(Location location, User user, Bitmap media) {
         this.location = location;
@@ -27,20 +26,20 @@ public class Feed {
         this.media = media;
     }
 
-    public int getId() {
-        return id;
+    public String getCreatedAt() {
+        return createdAt;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public String getCreatedTime() {
-        return createdTime;
+    public String getObjectId() {
+        return objectId;
     }
 
-    public void setCreatedTime(String createdTime) {
-        this.createdTime = createdTime;
+    public void setObjectId(String objectId) {
+        this.objectId = objectId;
     }
 
     public Location getLocation() {
@@ -83,19 +82,11 @@ public class Feed {
         this.likesList = likesList;
     }
 
-    public List<String> getTags() {
+    public String getTags() {
         return tags;
     }
 
-    public void setTags(List<String> tags) {
+    public void setTags(String tags) {
         this.tags = tags;
-    }
-
-    public List<User> getUsersInPhoto() {
-        return usersInPhoto;
-    }
-
-    public void setUsersInPhoto(List<User> usersInPhoto) {
-        this.usersInPhoto = usersInPhoto;
     }
 }

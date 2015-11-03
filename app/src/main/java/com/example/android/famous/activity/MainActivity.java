@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
     private static final int CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE = 200;
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
-    private Uri fileUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,12 +91,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // create Intent to take a picture and return control to the calling application
                 Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-                // create a file to save the image
-                fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
-
-                // set the image file name
-                //cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
 
                 // start the image capture Intent
                 startActivityForResult(cameraIntent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);

@@ -17,12 +17,12 @@ import java.util.List;
 /**
  * Created by Sohail on 9/15/15.
  */
-public class PostFeedRecyclerViewAdapter extends RecyclerView.Adapter<PostFeedRecyclerViewAdapter.MyViewHolder> {
+public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerViewAdapter.MyViewHolder> {
 
     LayoutInflater inflater;
     List<Feed> feedData = Collections.emptyList();
 
-    public PostFeedRecyclerViewAdapter(Context context, List<Feed> feedData) {
+    public FeedRecyclerViewAdapter(Context context, List<Feed> feedData) {
         inflater = LayoutInflater.from(context);
         this.feedData = feedData;
     }
@@ -35,10 +35,8 @@ public class PostFeedRecyclerViewAdapter extends RecyclerView.Adapter<PostFeedRe
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.fragment_post_feed_item, parent, false);
-        MyViewHolder myViewHolder = new MyViewHolder(view);
-
-        return myViewHolder;
+        View view = inflater.inflate(R.layout.fragment_feed_item, parent, false);
+        return new MyViewHolder(view);
     }
 
     @Override
@@ -48,6 +46,13 @@ public class PostFeedRecyclerViewAdapter extends RecyclerView.Adapter<PostFeedRe
         viewHolder.postUserName.setText(currentData.getUser().getUsername());
         viewHolder.postTime.setText(currentData.getCreatedTime());
         viewHolder.postImage.setImageBitmap(currentData.getMedia());
+
+    }
+
+    public void swap(List<Feed> data) {
+        feedData.clear();
+        feedData.addAll(data);
+        notifyDataSetChanged();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {

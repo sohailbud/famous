@@ -1,24 +1,23 @@
 package com.example.android.famous.presenter;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.util.Log;
 
-import com.example.android.famous.model.Feed;
 import com.example.android.famous.model.Location;
-import com.parse.GetDataCallback;
+import com.example.android.famous.util.ImageResizer;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -29,31 +28,35 @@ public class CameraPresenter {
 
     private static CameraPresenter cameraPresenter = null;
 
+    /**
+     * if CameraPresenter instance exists, return that, otherwise create a new instance
+     * @return CameraPresenter
+     */
     public static CameraPresenter getInstance() {
         if (cameraPresenter == null) cameraPresenter = new CameraPresenter();
         return cameraPresenter;
     }
 
+    /**
+     * Executes AsyncTask to save image on parse
+     * @param mediaUri - Uri to locate the media on phone
+     * @param context - context of activity requesting this method
+     * @param location - Location object
+     */
     public void saveParseObject(Uri mediaUri, Context context, Location location) {
-        new SaveParseObject(mediaUri, context, location).execute();
+        new SaveParseObjectAsyncTask(mediaUri, context, location).execute();
     }
 
-    private class SaveParseObject extends AsyncTask<Void, Void, Boolean> {
+    private class SaveParseObjectAsyncTask extends AsyncTask<Void, Void, Boolean> {
 
         Uri mediaUri;
         Context context;
         Location location;
 
-        public SaveParseObject(Uri mediaUri, Context context, Location location) {
+        public SaveParseObjectAsyncTask(Uri mediaUri, Context context, Location location) {
             this.mediaUri = mediaUri;
             this.context = context;
             this.location = location;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean aBoolean) {
-            super.onPostExecute(aBoolean);
-            Log.i("RESULT", aBoolean.toString());
         }
 
         @Override
@@ -61,43 +64,56 @@ public class CameraPresenter {
             return createNewParseFeed(mediaUri, context, location);
         }
 
-        public boolean createNewParseFeed(Uri mediaUri, Context context, Location location) {
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+        }
 
+        public boolean createNewParseFeed(Uri mediaUri, Context context, Location location) {
             Bitmap bitmap;
             ParseFile parseFile;
             ParseObject feedParse = new ParseObject("Feed");
 
-            final ParseObject locationParse = new ParseObject("Location");
-            locationParse.put("geoPoint", new ParseGeoPoint(location.getLatitude(), location.getLongitude()));
-
+            final ParseObject parseLocation = new ParseObject("Location");
+            parseLocation.put("geoPoint", new ParseGeoPoint(location.getLatitude(), location.getLongitude()));
 
             try {
-                // throws file not found exception
-                bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), mediaUri);
+//                bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), mediaUri);
+                bitmap = ImageResizer.decodeSampledBitmapFromResource(getRealPathFromURI(context, mediaUri), 612, 612);
+
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 20, stream);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream);
                 parseFile = new ParseFile(stream.toByteArray());
 
-                try {
-                    locationParse.save();
-                    parseFile.save();
+                parseLocation.save();
+                parseFile.save();
 
-                    feedParse.put("Location", locationParse);
-                    feedParse.put("createdBy", ParseUser.getCurrentUser());
-                    feedParse.put("Media", parseFile.getUrl());
+                feedParse.put("Location", parseLocation);
+                feedParse.put("createdBy", ParseUser.getCurrentUser());
+                feedParse.put("media", parseFile);
 
-                    feedParse.save();
+                feedParse.save();
 
-                    return true;
+                return true;
 
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                    return false;
+            } catch (ParseException e) {
+                e.printStackTrace();
+                return  false;
+            }
+        }
+
+        public String getRealPathFromURI(Context context, Uri contentUri) {
+            Cursor cursor = null;
+            try {
+                String[] proj = { MediaStore.Images.Media.DATA };
+                cursor = context.getContentResolver().query(contentUri,  proj, null, null, null);
+                int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                cursor.moveToFirst();
+                return cursor.getString(column_index);
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
                 }
-
-            } catch (IOException e) {
-                e.printStackTrace(); // file not found exception
-                return false;
             }
         }
     }

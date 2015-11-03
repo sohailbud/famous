@@ -5,7 +5,7 @@ package com.example.android.famous.model;
  */
 public class Location {
 
-    int id;
+    String objectId;
     double latitude;
     double longitude;
     String name;
@@ -15,19 +15,19 @@ public class Location {
         this.longitude = longitude;
     }
 
-    public int getId() {
-        return id;
+    public String getObjectId() {
+        return objectId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setObjectId(String objectId) {
+        this.objectId = objectId;
     }
 
     public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(float latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
@@ -35,7 +35,7 @@ public class Location {
         return longitude;
     }
 
-    public void setLongitude(float longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 

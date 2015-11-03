@@ -1,6 +1,7 @@
 package com.example.android.famous.adapter;
 
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,6 +33,7 @@ public class UserListRecyclerViewAdapter
         inflater = LayoutInflater.from(context);
         this.data = data;
         this.context = context;
+
     }
 
     @Override
@@ -115,5 +117,4 @@ public class UserListRecyclerViewAdapter
 
 
     }
-
 }

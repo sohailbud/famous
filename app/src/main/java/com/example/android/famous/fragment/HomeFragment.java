@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.example.android.famous.R;
 import com.example.android.famous.callback.FeedDataListener;
-import com.example.android.famous.fragment.common.PostFeedFragment;
+import com.example.android.famous.fragment.common.FeedFragment;
 import com.example.android.famous.fragment.common.UserListFragment;
 import com.example.android.famous.model.Feed;
 import com.example.android.famous.model.User;
@@ -22,6 +22,7 @@ import java.util.List;
  */
 public class HomeFragment extends Fragment implements SuggestedUserDataListener, FeedDataListener {
 
+    // presenter instance
     HomeFragmentPresenter homeFragmentPresenter = HomeFragmentPresenter.getInstance();
 
     public HomeFragment() {
@@ -33,10 +34,10 @@ public class HomeFragment extends Fragment implements SuggestedUserDataListener,
                              Bundle savedInstanceState) {
 
         // add suggestions fragment and pass data
-        homeFragmentPresenter.getSuggestedUserData(this);
+//        homeFragmentPresenter.getSuggestedUserData(this);
 
         // add feed fragment and pass data
-        homeFragmentPresenter.getFeedData(this);
+//        homeFragmentPresenter.getFeedData(this);
 
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false);
@@ -46,7 +47,7 @@ public class HomeFragment extends Fragment implements SuggestedUserDataListener,
     public void suggestedUserDataOnProcess(List<User> data) {
         FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
         UserListFragment userListFragment = new UserListFragment();
-        userListFragment.setUserData(data);
+//        userListFragment.setUserData(data);
         fragmentTransaction.add(R.id.fragmentHomeSuggestionsFeedContainer, userListFragment);
         fragmentTransaction.commit();
 
@@ -55,9 +56,9 @@ public class HomeFragment extends Fragment implements SuggestedUserDataListener,
     @Override
     public void feedDataOnProcess(List<Feed> data) {
         FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
-        PostFeedFragment postFeedFragment = new PostFeedFragment();
-        postFeedFragment.setFeedData(data);
-        fragmentTransaction.add(R.id.fragmentHomePostFeedContainer, postFeedFragment);
+        FeedFragment feedFragment = new FeedFragment();
+        feedFragment.setFeedData(data);
+        fragmentTransaction.add(R.id.fragmentHomePostFeedContainer, feedFragment);
         fragmentTransaction.commit();
     }
 }

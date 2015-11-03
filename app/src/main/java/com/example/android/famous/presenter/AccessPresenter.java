@@ -28,11 +28,23 @@ public class AccessPresenter {
         super();
     }
 
+    /**
+     * if AccessPresenter instance exists, return that, otherwise create a new instance
+     * @return AccessPresented instance
+     */
     public static AccessPresenter getInstance() {
         if (accessPresenter == null) accessPresenter = new AccessPresenter();
         return accessPresenter;
     }
 
+
+    /**
+     * Creates a new parse user from signup screen
+     * @param fullName input value
+     * @param email input value
+     * @param userName input value
+     * @param password input value
+     */
     public  void createNewParseUser(String fullName, String email, String userName, String password) {
         final ParseUser newUser = new ParseUser();
         newUser.setUsername(userName);
@@ -68,6 +80,11 @@ public class AccessPresenter {
         });
     }
 
+    /**
+     * verify if login information matches parse user
+     * @param userName username input
+     * @param password password input
+     */
     public void verifyParseUser(String userName, String password) {
         ParseUser.logInInBackground(userName, password, new LogInCallback() {
             @Override
@@ -81,6 +98,10 @@ public class AccessPresenter {
         });
     }
 
+    /**
+     * checks if current user is a parse user or not, if a parse user then go to home activity
+     * @return true is anonymous and false if isn't
+     */
     public boolean isUserAnonymous() {
         // Determine whether the current user is an anonymous user
         if (ParseAnonymousUtils.isLinked(ParseUser.getCurrentUser())) {
@@ -98,11 +119,20 @@ public class AccessPresenter {
         }
     }
 
+    /**
+     * gets current user as java object
+     * @return User
+     */
     public static User getCurrentUser() {
         if (user == null) user = convertParseUserToUser(ParseUser.getCurrentUser());
         return user;
     }
 
+    /**
+     * convers parsse user to java user object
+     * @param parseUser takes parse user as parameter
+     * @return return java user object
+     */
     public static User convertParseUserToUser(ParseUser parseUser) {
         user = new User(parseUser.getObjectId(), parseUser.getUsername(), (String) parseUser.get("fullName"));
         return user;

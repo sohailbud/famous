@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 
 import com.example.android.famous.R;
 import com.example.android.famous.adapter.PhotosGridRecyclerViewAdapter;
-import com.example.android.famous.adapter.PostFeedRecyclerViewAdapter;
 
 import java.util.List;
 
