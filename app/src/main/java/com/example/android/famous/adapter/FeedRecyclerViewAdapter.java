@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.example.android.famous.R;
 import com.example.android.famous.model.Feed;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,11 +21,11 @@ import java.util.List;
 public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerViewAdapter.MyViewHolder> {
 
     LayoutInflater inflater;
-    List<Feed> feedData = Collections.emptyList();
+    List<Feed> feedData = new ArrayList<>();
 
-    public FeedRecyclerViewAdapter(Context context, List<Feed> feedData) {
+    public FeedRecyclerViewAdapter(Context context) {
+
         inflater = LayoutInflater.from(context);
-        this.feedData = feedData;
     }
 
     @Override
@@ -41,16 +42,22 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
 
     @Override
     public void onBindViewHolder(MyViewHolder viewHolder, int position) {
-        Feed currentData = feedData.get(position);
-        viewHolder.postAvatar.setImageResource(currentData.getUser().getProfilePicture());
-        viewHolder.postUserName.setText(currentData.getUser().getUsername());
-        viewHolder.postTime.setText(currentData.getCreatedAt());
-        viewHolder.postImage.setImageBitmap(currentData.getMedia());
-
+        if (!feedData.isEmpty()) {
+            Feed currentData = feedData.get(position);
+            viewHolder.postAvatar.setImageResource(currentData.getUser().getProfilePicture());
+            viewHolder.postUserName.setText(currentData.getUser().getUsername());
+            viewHolder.postTime.setText(currentData.getCreatedAt());
+//            viewHolder.postImage.setImageBitmap(currentData.getMedia());
+        }
     }
 
     public void swap(List<Feed> data) {
         feedData.clear();
+        feedData.addAll(data);
+        notifyDataSetChanged();
+    }
+
+    public void newDataInsert(List<Feed> data) {
         feedData.addAll(data);
         notifyDataSetChanged();
     }

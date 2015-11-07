@@ -23,6 +23,7 @@ import com.example.android.famous.fragment.HomeFragment;
 import com.example.android.famous.fragment.ProfileFragment;
 import com.example.android.famous.fragment.SearchFragment;
 import com.example.android.famous.R;
+import com.example.android.famous.model.DataHandler;
 import com.example.android.famous.model.Location;
 import com.example.android.famous.presenter.CameraPresenter;
 import com.parse.ParseUser;
@@ -53,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
             setUpViewPager(viewPager);
             tabLayout.setupWithViewPager(viewPager);
         }
-
 
         camera();
     }

@@ -8,8 +8,8 @@ import android.support.v7.widget.Toolbar;
 
 import com.example.android.famous.R;
 import com.example.android.famous.adapter.TabsPagerAdapter;
+import com.example.android.famous.fragment.common.FeedFragment;
 import com.example.android.famous.fragment.common.PhotosGridFragment;
-import com.example.android.famous.fragment.common.PostFeedFragment;
 import com.example.android.famous.presenter.UserPresenter;
 
 public class UserActivity extends AppCompatActivity {
@@ -40,8 +40,7 @@ public class UserActivity extends AppCompatActivity {
         photosGridFragmentUserPosts.setGridData(null);
 
         // Tab2
-        PostFeedFragment postFeedFragment = new PostFeedFragment();
-        postFeedFragment.setFeedData(null);
+        FeedFragment postFeedFragment = new FeedFragment();
         // Tab3 (Map)
 
         // Tab4
@@ -52,7 +51,7 @@ public class UserActivity extends AppCompatActivity {
 
         adapter.addFragment(photosGridFragmentUserPosts, R.drawable.ic_action_grid);
         adapter.addFragment(postFeedFragment, R.drawable.ic_action_linear);
-        adapter.addFragment(new PostFeedFragment(), R.drawable.ic_action_location_on);
+        adapter.addFragment(new FeedFragment(), R.drawable.ic_action_location_on);
         adapter.addFragment(photosGridFragmentUserPhotos, R.drawable.ic_action_person_pin);
 
         viewPager.setAdapter(adapter);

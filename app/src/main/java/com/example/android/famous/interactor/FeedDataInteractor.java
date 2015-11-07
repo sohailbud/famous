@@ -60,8 +60,9 @@ public class FeedDataInteractor extends ParseHelper {
                     for (ParseObject parseFeedData : parseFeedDataList) {
 
                         // get location data
-                        ParseObject parseLocation = (ParseObject) parseFeedData.get("location");
-                        ParseGeoPoint parseGeoPoint = parseLocation.getParseGeoPoint("geoPoint");
+                        ParseObject parseLocation = (ParseObject) parseFeedData.get("Location");
+
+                        ParseGeoPoint parseGeoPoint = parseLocation.fetchIfNeeded().getParseGeoPoint("geoPoint");
                         Location location = new Location(parseGeoPoint.getLatitude(), parseGeoPoint.getLongitude());
                         location.setObjectId(parseLocation.getObjectId());
                         location.setName((String) parseLocation.get("name"));

@@ -35,12 +35,12 @@
 
 
     <FrameLayout
-        android:id="@+id/fragmentHomeSuggestionsFeedContainer"
+        android:id="@+id/fragmentHomeSuggestionsContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
     <FrameLayout
-        android:id="@+id/fragmentHomePostFeedContainer"
+        android:id="@+id/fragmentHomeFeedContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/fragmentHomeSuggestionsFeedContainer"/>

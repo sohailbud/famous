@@ -36,17 +36,14 @@ public class FeedFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_feed, container, false);
 
         postFeedRecyclerView = (RecyclerView) view.findViewById(R.id.postFeedItemContainer);
-        postFeedRecyclerViewAdapter = new FeedRecyclerViewAdapter(getActivity(), null);
+        postFeedRecyclerViewAdapter = new FeedRecyclerViewAdapter(getActivity());
         postFeedRecyclerView.setAdapter(postFeedRecyclerViewAdapter);
         postFeedRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         HomeFragmentPresenter homeFragmentPresenter = HomeFragmentPresenter.getInstance();
-        homeFragmentPresenter.fetchDataForAdapter(postFeedRecyclerViewAdapter);
+        homeFragmentPresenter.fetchDataForAdapter(postFeedRecyclerViewAdapter, this);
 
         return view;
     }
-
-
-
 
 }

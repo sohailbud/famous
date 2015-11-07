@@ -10,6 +10,7 @@ import com.example.android.famous.R;
 import com.example.android.famous.callback.FeedDataListener;
 import com.example.android.famous.fragment.common.FeedFragment;
 import com.example.android.famous.fragment.common.UserListFragment;
+import com.example.android.famous.model.DataHandler;
 import com.example.android.famous.model.Feed;
 import com.example.android.famous.model.User;
 import com.example.android.famous.presenter.HomeFragmentPresenter;
@@ -20,7 +21,7 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HomeFragment extends Fragment implements SuggestedUserDataListener {
+public class HomeFragment extends Fragment {
 
     // presenter instance
     HomeFragmentPresenter homeFragmentPresenter = HomeFragmentPresenter.getInstance();
@@ -33,6 +34,11 @@ public class HomeFragment extends Fragment implements SuggestedUserDataListener 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+        FeedFragment feedFragment = new FeedFragment();
+        fragmentTransaction.add(R.id.fragmentHomeFeedContainer, feedFragment);
+        fragmentTransaction.commit();
+
         // add suggestions fragment and pass data
 //        homeFragmentPresenter.getSuggestedUserData(this);
 
@@ -43,15 +49,14 @@ public class HomeFragment extends Fragment implements SuggestedUserDataListener 
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
-    @Override
-    public void suggestedUserDataOnProcess(List<User> data) {
-        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
-        UserListFragment userListFragment = new UserListFragment();
-        userListFragment.setUserData(data);
-        fragmentTransaction.add(R.id.fragmentHomeSuggestionsFeedContainer, userListFragment);
-        fragmentTransaction.commit();
-
-    }
+//    @Override
+//    public void suggestedUserDataOnProcess(List<User> data) {
+//        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+//        UserListFragment userListFragment = new UserListFragment();
+//        userListFragment.setUserData(data);
+//        fragmentTransaction.add(R.id.fragmentHomeSuggestionsFeedContainer, userListFragment);
+//        fragmentTransaction.commit();
+//    }
 
 
 

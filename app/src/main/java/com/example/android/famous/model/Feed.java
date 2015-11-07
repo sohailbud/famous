@@ -14,16 +14,16 @@ public class Feed {
     private String createdAt;
     private Location location;
     private User user;
-    private Bitmap media;
+    private String mediaURI;
     private String tags;
 
     private List<Comment> commentList = new ArrayList<>();
     private List<User> likesList = new ArrayList<>();
 
-    public Feed(Location location, User user, Bitmap media) {
+    public Feed(Location location, User user, String mediaURI) {
         this.location = location;
         this.user = user;
-        this.media = media;
+        this.mediaURI = mediaURI;
     }
 
     public String getCreatedAt() {
@@ -58,14 +58,6 @@ public class Feed {
         this.user = user;
     }
 
-    public Bitmap getMedia() {
-        return media;
-    }
-
-    public void setMedia(Bitmap media) {
-        this.media = media;
-    }
-
     public List<Comment> getCommentList() {
         return commentList;
     }
@@ -88,5 +80,13 @@ public class Feed {
 
     public void setTags(String tags) {
         this.tags = tags;
+    }
+
+    public String getMediaURI() {
+        return mediaURI;
+    }
+
+    public void setMediaURI(String mediaURI) {
+        this.mediaURI = mediaURI;
     }
 }
