@@ -40,9 +40,10 @@ public class DataHandler {
     public long insertUserData(User user) {
 
         Cursor userCursor = returnUserData(user.getObjectId());
+        userCursor.moveToFirst();
 
-        if (userCursor.getCount() == -1) {
-            long row_ID = userCursor.getLong(userCursor.getColumnIndex("_ID"));
+        if (userCursor.getCount() > 0) {
+            long row_ID = userCursor.getLong(userCursor.getColumnIndex("_id"));
             userCursor.close();
             return row_ID;
 
@@ -57,6 +58,8 @@ public class DataHandler {
     }
 
     public long insertLocationData(Location location) {
+
+        Cursor locationCursor = returnLocationData(location.getObjectId());
         ContentValues locationValues = new ContentValues();
         locationValues.put(LocationEntry.COLUMN_NAME_OBJECT_ID, location.getObjectId());
         locationValues.put(LocationEntry.COLUMN_NAME_LATITUDE, location.getLatitude());
@@ -80,20 +83,26 @@ public class DataHandler {
 
     public Cursor returnUserData(long user_ID) {
         final String SQL_RETURN_USER_DATA = "SELECT * FROM " + UserEntry.TABLE_NAME +
-                " WHERE " + UserEntry._ID + " = " + user_ID;
-        return db.rawQuery(SQL_RETURN_USER_DATA, null);
+                " WHERE " + UserEntry._ID + " = ?";
+        return db.rawQuery(SQL_RETURN_USER_DATA, new String[] {Long.toString(user_ID)});
     }
 
     public Cursor returnUserData(String parseObjectId) {
         final String SQL_RETURN_USER_DATA = "SELECT * FROM " + UserEntry.TABLE_NAME +
-                " WHERE " + UserEntry.COLUMN_NAME_OBJECT_ID + " = " + '"' + parseObjectId + '"';
-        return db.rawQuery(SQL_RETURN_USER_DATA, null);
+                " WHERE " + UserEntry.COLUMN_NAME_OBJECT_ID + " = ?";
+        return db.rawQuery(SQL_RETURN_USER_DATA, new String[] {parseObjectId});
     }
 
     public Cursor returnLocationData(long location_ID) {
         final String SQL_RETURN_LOCATION_DATA = "SELECT * FROM " + LocationEntry.TABLE_NAME +
-                " WHERE " + LocationEntry._ID + " = " + location_ID;
-        return db.rawQuery(SQL_RETURN_LOCATION_DATA, null);
+                " WHERE " + LocationEntry._ID + " = ?";
+        return db.rawQuery(SQL_RETURN_LOCATION_DATA, new String[] {Long.toString(location_ID)});
+    }
+
+    public Cursor returnLocationData(String parseObjectId) {
+        final String SQL_RETURN_LOCATION_DATA = "SELECT * FROM " + LocationEntry.TABLE_NAME +
+                " WHERE " + LocationEntry._ID + " = ?";
+        return db.rawQuery(SQL_RETURN_LOCATION_DATA, new String[] {parseObjectId});
     }
 
     public Cursor returnFeedData() {
@@ -107,7 +116,7 @@ public class DataHandler {
         private static final String DATABASE_NAME = "famousDatabase";
 
         // If you change the database schema, you must increment the database version.
-        private static final int DATABASE_VERSION = 17;
+        private static final int DATABASE_VERSION = 18;
 
         public DataBaseHelper(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);

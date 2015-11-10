@@ -8,16 +8,16 @@ import java.util.List;
  */
 public class UserDetails {
 
-    User user;
-    String website;
-    String bio;
-    String gender;
-    String email;
-    String phoneNumber;
+    private User user;
+    private String website;
+    private String bio;
+    private String gender;
+    private String email;
+    private String phoneNumber;
 
-    List<User> follows = new ArrayList<>();
-    List<User> followedBy = new ArrayList<>();
-    List<User> requestedBy = new ArrayList<>();
+    private List<User> follows = new ArrayList<>();
+    private List<User> followedBy = new ArrayList<>();
+    private List<User> requestedBy = new ArrayList<>();
 
     public User getUser() {
         return user;

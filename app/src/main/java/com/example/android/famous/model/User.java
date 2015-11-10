@@ -8,10 +8,10 @@ import java.util.List;
  */
 public class User {
 
-    String objectId;
-    String username;
-    String fullName;
-    int profilePicture;
+    private String objectId;
+    private String username;
+    private String fullName;
+    private int profilePicture;
 
     public User(String objectId, String username, String fullName) {
         this.objectId = objectId;

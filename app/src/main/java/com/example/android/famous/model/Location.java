@@ -5,10 +5,10 @@ package com.example.android.famous.model;
  */
 public class Location {
 
-    String objectId;
-    double latitude;
-    double longitude;
-    String name;
+    private String objectId;
+    private double latitude;
+    private double longitude;
+    private String name;
 
     public Location(double latitude, double longitude) {
         this.latitude = latitude;

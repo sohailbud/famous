@@ -7,17 +7,17 @@ import android.text.format.DateFormat;
  */
 public class Comment {
 
-    int id;
-    String createdTime;
-    String text;
-    User user;
+    private String objectId;
+    private String createdTime;
+    private String text;
+    private User user;
 
-    public int getId() {
-        return id;
+    public String getObjectId() {
+        return objectId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setObjectId(String objectId) {
+        this.objectId = objectId;
     }
 
     public String getCreatedTime() {
