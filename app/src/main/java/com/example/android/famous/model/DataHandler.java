@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.example.android.famous.model.DataContract.UserEntry;
 import com.example.android.famous.model.DataContract.UserDetailsEntry;
@@ -40,7 +41,7 @@ public class DataHandler {
 
         Cursor userCursor = returnUserData(user.getObjectId());
 
-        if (userCursor != null) {
+        if (userCursor.getCount() == -1) {
             long row_ID = userCursor.getLong(userCursor.getColumnIndex("_ID"));
             userCursor.close();
             return row_ID;
@@ -85,7 +86,7 @@ public class DataHandler {
 
     public Cursor returnUserData(String parseObjectId) {
         final String SQL_RETURN_USER_DATA = "SELECT * FROM " + UserEntry.TABLE_NAME +
-                " WHERE " + UserEntry.COLUMN_NAME_OBJECT_ID + " = " + parseObjectId;
+                " WHERE " + UserEntry.COLUMN_NAME_OBJECT_ID + " = " + '"' + parseObjectId + '"';
         return db.rawQuery(SQL_RETURN_USER_DATA, null);
     }
 
@@ -98,6 +99,7 @@ public class DataHandler {
     public Cursor returnFeedData() {
         final String SQL_RETURN_FEED_DATA = "SELECT * FROM " + FeedEntry.TABLE_NAME;
         return db.rawQuery(SQL_RETURN_FEED_DATA, null);
+
     }
 
     protected class DataBaseHelper extends SQLiteOpenHelper {
@@ -105,7 +107,7 @@ public class DataHandler {
         private static final String DATABASE_NAME = "famousDatabase";
 
         // If you change the database schema, you must increment the database version.
-        private static final int DATABASE_VERSION = 1;
+        private static final int DATABASE_VERSION = 17;
 
         public DataBaseHelper(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -115,25 +117,26 @@ public class DataHandler {
         public void onCreate(SQLiteDatabase db) {
 
             final String SQL_CREATE_USER_TABLE = "CREATE TABLE " + UserEntry.TABLE_NAME + " (" +
-                    UserEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    UserEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     UserEntry.COLUMN_NAME_OBJECT_ID + " TEXT UNIQUE NOT NULL, " +
                     UserEntry.COLUMN_NAME_USERNAME + " TEXT UNIQUE NOT NULL, " +
                     UserEntry.COLUMN_NAME_FULL_NAME + " TEXT NOT NULL, " +
                     UserEntry.COLUMN_NAME_PROFILE_PIC_URI + " TEXT UNIQUE " +
                     " );";
 
-            final String SQL_CREATE_USER_DETAILS_TABLE = "CREATE_TABLE " + UserDetailsEntry.TABLE_NAME + " (" +
-                    UserDetailsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+            final String SQL_CREATE_USER_DETAILS_TABLE = "CREATE TABLE " + UserDetailsEntry.TABLE_NAME + " (" +
+                    UserDetailsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     UserDetailsEntry.COLUMN_NAME_OBJECT_ID + " TEXT UNIQUE NOT NULL, " +
                     UserDetailsEntry.COLUMN_NAME_WEBSITE + " TEXT, " +
                     UserDetailsEntry.COLUMN_NAME_BIO + " TEXT, " +
                     UserDetailsEntry.COLUMN_NAME_GENDER + " TEXT, " +
                     UserDetailsEntry.COLUMN_NAME_EMAIL + " TEXT UNIQUE NOT NULL, " +
-                    UserDetailsEntry.COLUMN_NAME_PHONE_NUMBER + " TEXT " +
+                    UserDetailsEntry.COLUMN_NAME_PHONE_NUMBER + " TEXT, " +
+                    UserDetailsEntry.COLUMN_NAME_USER_KEY + " INTEGER UNIQUE NOT NULL, " +
 
                     // Setup the user_id as the foreign column to UserEntry table
                     " FOREIGN KEY (" + UserDetailsEntry.COLUMN_NAME_USER_KEY + ") REFERENCES " +
-                    UserEntry.TABLE_NAME + " (" + UserEntry._ID + "), " +
+                    UserEntry.TABLE_NAME + " (" + UserEntry._ID + ") " +
                     " );";
 
             final String SQL_CREATE_FEED_TABLE = "CREATE TABLE " + FeedEntry.TABLE_NAME + " (" +
@@ -142,6 +145,8 @@ public class DataHandler {
                     FeedEntry.COLUMN_NAME_CREATED_AT + " INTEGER NOT NULL, " +
                     FeedEntry.COLUMN_NAME_MEDIA_URI + " TEXT UNIQUE NOT NULL, " +
                     FeedEntry.COLUMN_NAME_TAGS + " TEXT, " +
+                    FeedEntry.COLUMN_NAME_LOCATION_KEY + " INTEGER, " +
+                    FeedEntry.COLUMN_NAME_USER_KEY + " INTEGER, " +
 
                     // Setup the location_id as the foreign column to LocationEntry table
                     " FOREIGN KEY (" + FeedEntry.COLUMN_NAME_LOCATION_KEY + ") REFERENCES " +
@@ -166,6 +171,8 @@ public class DataHandler {
                     CommentEntry.COLUMN_NAME_OBJECT_ID + " TEXT UNIQUE NOT NULL, " +
                     CommentEntry.COLUMN_NAME_CREATED_AT + " INTEGER NOT NULL, " +
                     CommentEntry.COLUMN_NAME_TEXT + " TEXT NOT NULL, " +
+                    CommentEntry.COLUMN_NAME_FEED_KEY + " INTEGER, " +
+                    CommentEntry.COLUMN_NAME_USER_KEY + " INTEGER, " +
 
                     // Setup the feed_id as the foreign column to FeedEntry table
                     " FOREIGN KEY (" + CommentEntry.COLUMN_NAME_FEED_KEY + ") REFERENCES " +
@@ -177,8 +184,10 @@ public class DataHandler {
                     " );";
 
             final String SQL_CREATE_LIKES_TABLE = "CREATE TABLE " + LikesEntry.TABLE_NAME + " (" +
-                    LikesEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    LikesEntry.COLUMN_NAME_OBJECT_ID + " TEXT UNIQUE NOT NUL, " +
+                    LikesEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    LikesEntry.COLUMN_NAME_OBJECT_ID + " TEXT UNIQUE NOT NULL, " +
+                    LikesEntry.COLUMN_NAME_USER_KEY + " INTEGER, " +
+                    LikesEntry.COLUMN_NAME_FEED_KEY + " INTEGER, " +
 
                     // Setup the user_id as the foreign column to UserEntry table
                     " FOREIGN KEY (" + LikesEntry.COLUMN_NAME_USER_KEY + ") REFERENCES " +

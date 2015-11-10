@@ -81,6 +81,7 @@ public class HomeFragmentPresenter implements FeedFragmentInterface {
 
     public List<Feed> getSqlFeedData() {
         DataHandler dataHandler = new DataHandler(feedFragment.getActivity());
+        dataHandler.open();
         Cursor cursorFeed = dataHandler.returnFeedData();
 
         List<Feed> feedList = new ArrayList<>();
