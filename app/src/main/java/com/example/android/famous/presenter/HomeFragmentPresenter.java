@@ -1,12 +1,9 @@
 package com.example.android.famous.presenter;
 
 import android.database.Cursor;
-import android.database.sqlite.SQLiteException;
 
-import com.example.android.famous.activity.MainActivity;
 import com.example.android.famous.adapter.FeedRecyclerViewAdapter;
 import com.example.android.famous.callback.FeedFragmentInterface;
-import com.example.android.famous.fragment.HomeFragment;
 import com.example.android.famous.fragment.common.FeedFragment;
 import com.example.android.famous.interactor.FeedDataInteractor;
 import com.example.android.famous.model.DataHandler;
@@ -17,6 +14,9 @@ import com.example.android.famous.model.User;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.android.famous.model.DataContract.FeedEntry;
+import com.example.android.famous.model.DataContract.LocationEntry;
+import com.example.android.famous.model.DataContract.UserEntry;
 
 /**
  * Created by Sohail on 9/24/15.
@@ -43,14 +43,45 @@ public class HomeFragmentPresenter implements FeedFragmentInterface {
         return homeFragmentPresenter;
     }
 
+    /**
+     * Gets called from onPostExecute after asyncTask successfully grabs the data from parse
+     * @param feedList
+     */
     @Override
     public void feedDataOnProcess(List<Feed> feedList) {
-        if (feedRecyclerViewAdapter != null) feedRecyclerViewAdapter.newDataInsert(feedList);
+        if (feedRecyclerViewAdapter != null && !feedList.isEmpty())
+            feedRecyclerViewAdapter.newDataInsert(feedList);
         insertInDatabase(feedList);
 
     }
 
-    public void insertInDatabase(List<Feed> feedList) {
+    /**
+     * This method gets called from the android UI and performs following tasks
+     * 1. start asyncTask to get remote data
+     * 2. get current data from sql and load it to the adapter
+     * @param feedRecyclerViewAdapter
+     * @param feedFragment
+     */
+    public void fetchDataForAdapter(FeedRecyclerViewAdapter feedRecyclerViewAdapter, FeedFragment feedFragment) {
+        // 1. get data from server
+        FeedDataInteractor.GetFeedDataTask feedDataTask = new FeedDataInteractor(). new GetFeedDataTask();
+        feedDataTask.delegate = this;
+        feedDataTask.execute();
+
+        this.feedRecyclerViewAdapter = feedRecyclerViewAdapter;
+        this.feedFragment = feedFragment;
+
+        // get current sql data
+        List<Feed> feedList = getSqlFeedData();
+        if (!feedList.isEmpty()) feedRecyclerViewAdapter.newDataInsert(feedList);
+
+    }
+
+    /**
+     * Loads the provided feed data into sql database
+     * @param feedList
+     */
+    private void insertInDatabase(List<Feed> feedList) {
 
         // insert into sql database
         DataHandler dataHandler = new DataHandler(feedFragment.getActivity());
@@ -65,51 +96,58 @@ public class HomeFragmentPresenter implements FeedFragmentInterface {
         dataHandler.close();
     }
 
-    public void fetchDataForAdapter(FeedRecyclerViewAdapter feedRecyclerViewAdapter, FeedFragment feeedFragment) {
-        // get data from server
-        FeedDataInteractor.GetFeedDataTask feedDataTask = new FeedDataInteractor(). new GetFeedDataTask();
-        feedDataTask.delegate = this;
-        feedDataTask.execute();
-        this.feedRecyclerViewAdapter = feedRecyclerViewAdapter;
-        this.feedFragment = feeedFragment;
-
-        // get current sql data
-        List<Feed> feedList = getSqlFeedData();
-        feedRecyclerViewAdapter.newDataInsert(feedList);
-
-    }
-
-    public List<Feed> getSqlFeedData() {
+    /**
+     * Get the data from sql database
+     * @return
+     */
+    private List<Feed> getSqlFeedData() {
         DataHandler dataHandler = new DataHandler(feedFragment.getActivity());
         dataHandler.open();
+
+        // get all feed data from the database
         Cursor cursorFeed = dataHandler.returnFeedData();
 
         List<Feed> feedList = new ArrayList<>();
 
+        // convert feed data from cursors to java objects
         while (cursorFeed.moveToNext()) {
 
-            long location_ID = cursorFeed.getInt(4);
-            long user_ID = cursorFeed.getInt(5);
+            // get reference to location and user from the feed cursor
+            long location_ID = cursorFeed.getInt(cursorFeed.getColumnIndex(FeedEntry.COLUMN_NAME_LOCATION_KEY));
+            long user_ID = cursorFeed.getInt(cursorFeed.getColumnIndex(FeedEntry.COLUMN_NAME_USER_KEY));
 
+            // using the id's get location and user cursors
             Cursor cursorLocation = dataHandler.returnLocationData(location_ID);
             Cursor cursorUser = dataHandler.returnUserData(user_ID);
 
+            // create location object
             cursorLocation.moveToFirst();
-            Location location = new Location(cursorLocation.getDouble(1), cursorLocation.getDouble(2));
-            location.setObjectId(cursorLocation.getString(0));
-            location.setName(cursorLocation.getString(3));
+            Location location = new Location(
+                    cursorLocation.getDouble(cursorLocation.getColumnIndex(LocationEntry.COLUMN_NAME_LATITUDE)),
+                    cursorLocation.getDouble(cursorLocation.getColumnIndex(LocationEntry.COLUMN_NAME_LONGITUDE)));
+
+            location.setObjectId(cursorLocation.getString(
+                    cursorLocation.getColumnIndex(LocationEntry.COLUMN_NAME_OBJECT_ID)));
+
+            location.setName(cursorLocation.getString(
+                    cursorLocation.getColumnIndex(LocationEntry.COLUMN_NAME_NAME)));
             cursorLocation.close();
 
+            // create user object
             cursorUser.moveToFirst();
-            User user = new User(cursorUser.getString(0), cursorUser.getString(1), cursorUser.getString(2));
+            User user = new User(
+                    cursorUser.getString(cursorUser.getColumnIndex(UserEntry.COLUMN_NAME_OBJECT_ID)),
+                    cursorUser.getString(cursorUser.getColumnIndex(UserEntry.COLUMN_NAME_USERNAME)),
+                    cursorUser.getString(cursorUser.getColumnIndex(UserEntry.COLUMN_NAME_FULL_NAME)));
             cursorUser.close();
 
+            // create feed object
             Feed feed = new Feed(location, user, null);
 
-            feed.setObjectId(cursorFeed.getString(0));
-            feed.setCreatedAt(cursorFeed.getString(1));
-            feed.setMediaURI(cursorFeed.getString(2));
-            feed.setTags(cursorFeed.getString(3));
+            feed.setObjectId(cursorFeed.getString(cursorFeed.getColumnIndex(FeedEntry.COLUMN_NAME_OBJECT_ID)));
+            feed.setCreatedAt(cursorFeed.getString(cursorFeed.getColumnIndex(FeedEntry.COLUMN_NAME_CREATED_AT)));
+            feed.setMediaURI(cursorFeed.getString(cursorFeed.getColumnIndex(FeedEntry.COLUMN_NAME_MEDIA_URI)));
+            feed.setTags(cursorFeed.getString(cursorFeed.getColumnIndex(FeedEntry.COLUMN_NAME_TAGS)));
 
             feedList.add(feed);
         }
