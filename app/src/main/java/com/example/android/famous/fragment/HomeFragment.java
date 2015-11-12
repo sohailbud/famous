@@ -7,24 +7,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.example.android.famous.R;
-import com.example.android.famous.callback.FeedDataListener;
+import com.example.android.famous.adapter.FeedRecyclerViewAdapter;
 import com.example.android.famous.fragment.common.FeedFragment;
-import com.example.android.famous.fragment.common.UserListFragment;
-import com.example.android.famous.model.DataHandler;
-import com.example.android.famous.model.Feed;
-import com.example.android.famous.model.User;
 import com.example.android.famous.presenter.HomeFragmentPresenter;
-import com.example.android.famous.callback.SuggestedUserDataListener;
-
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements FeedFragment.OnCompleteListener {
 
     // presenter instance
-    HomeFragmentPresenter homeFragmentPresenter = HomeFragmentPresenter.getInstance();
+    private HomeFragmentPresenter homeFragmentPresenter = HomeFragmentPresenter.getInstance();
 
     public HomeFragment() {
         // Required empty public constructor
@@ -38,18 +31,18 @@ public class HomeFragment extends Fragment {
         FeedFragment feedFragment = new FeedFragment();
         fragmentTransaction.add(R.id.fragmentHomeFeedContainer, feedFragment);
         fragmentTransaction.commit();
-
-        // add suggestions fragment and pass data
-//        homeFragmentPresenter.getSuggestedUserData(this);
-
-        // add feed fragment and pass data
-//        homeFragmentPresenter.getFeedData(this);
+        feedFragment.mListener = this;
 
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
-//    @Override
+    @Override
+    public void onComplete(FeedRecyclerViewAdapter feedRecyclerViewAdapter, FeedFragment feedFragment) {
+        homeFragmentPresenter.fetchDataForAdapter(feedRecyclerViewAdapter, feedFragment);
+    }
+
+    //    @Override
 //    public void suggestedUserDataOnProcess(List<User> data) {
 //        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
 //        UserListFragment userListFragment = new UserListFragment();

@@ -47,14 +47,9 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
             viewHolder.postAvatar.setImageResource(currentData.getUser().getProfilePicture());
             viewHolder.postUserName.setText(currentData.getUser().getUsername());
             viewHolder.postTime.setText(currentData.getCreatedAt());
+
 //            viewHolder.postImage.setImageBitmap(currentData.getMedia());
         }
-    }
-
-    public void swap(List<Feed> data) {
-        feedData.clear();
-        feedData.addAll(data);
-        notifyDataSetChanged();
     }
 
     public void newDataInsert(List<Feed> data) {

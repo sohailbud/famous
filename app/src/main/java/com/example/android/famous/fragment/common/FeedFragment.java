@@ -11,19 +11,15 @@ import android.view.ViewGroup;
 
 import com.example.android.famous.R;
 import com.example.android.famous.adapter.FeedRecyclerViewAdapter;
-import com.example.android.famous.callback.FeedFragmentInterface;
-import com.example.android.famous.model.Feed;
-import com.example.android.famous.presenter.HomeFragmentPresenter;
-
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class FeedFragment extends Fragment {
 
-    RecyclerView postFeedRecyclerView;
-    FeedRecyclerViewAdapter postFeedRecyclerViewAdapter;
+    RecyclerView feedRecyclerView;
+    FeedRecyclerViewAdapter feedRecyclerViewAdapter;
+    public OnCompleteListener mListener;
 
     public FeedFragment() {
         // Required empty public constructor
@@ -35,15 +31,19 @@ public class FeedFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_feed, container, false);
 
-        postFeedRecyclerView = (RecyclerView) view.findViewById(R.id.postFeedItemContainer);
-        postFeedRecyclerViewAdapter = new FeedRecyclerViewAdapter(getActivity());
-        postFeedRecyclerView.setAdapter(postFeedRecyclerViewAdapter);
-        postFeedRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        feedRecyclerView = (RecyclerView) view.findViewById(R.id.postFeedItemContainer);
+        feedRecyclerViewAdapter = new FeedRecyclerViewAdapter(getActivity());
+        feedRecyclerView.setAdapter(feedRecyclerViewAdapter);
+        feedRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        HomeFragmentPresenter homeFragmentPresenter = HomeFragmentPresenter.getInstance();
-        homeFragmentPresenter.fetchDataForAdapter(postFeedRecyclerViewAdapter, this);
+        mListener.onComplete(feedRecyclerViewAdapter, this);
 
         return view;
+    }
+
+    public interface OnCompleteListener {
+        void onComplete(
+                FeedRecyclerViewAdapter feedRecyclerViewAdapter, FeedFragment feedFragment);
     }
 
 }

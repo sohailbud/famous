@@ -173,7 +173,7 @@ public class DataHandler {
         private static final String DATABASE_NAME = "famousDatabase";
 
         // If you change the database schema, you must increment the database version.
-        private static final int DATABASE_VERSION = 3;
+        private static final int DATABASE_VERSION = 1;
 
         public DataBaseHelper(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
