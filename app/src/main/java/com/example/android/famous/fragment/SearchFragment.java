@@ -38,9 +38,9 @@ public class SearchFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_search, container, false);
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+//    @Override
+//    public void onActivityCreated(Bundle savedInstanceState) {
+//        super.onActivityCreated(savedInstanceState);
 
 //        final View activityRootView = getActivity().findViewById(R.id.activityRoot);
 //        activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(
@@ -75,7 +75,7 @@ public class SearchFragment extends Fragment {
 //    }
 
 
-}
+
 
 
 

@@ -29,9 +29,9 @@ public class HomeFragment extends Fragment implements FeedFragment.OnCompleteLis
 
         FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
         FeedFragment feedFragment = new FeedFragment();
+        feedFragment.setmListener(this);
         fragmentTransaction.add(R.id.fragmentHomeFeedContainer, feedFragment);
         fragmentTransaction.commit();
-        feedFragment.mListener = this;
 
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false);

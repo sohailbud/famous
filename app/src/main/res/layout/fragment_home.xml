@@ -42,8 +42,7 @@
     <FrameLayout
         android:id="@+id/fragmentHomeFeedContainer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/fragmentHomeSuggestionsFeedContainer"/>
+        android:layout_height="wrap_content"/>
 
 
 </RelativeLayout>

@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
             tabLayout.setupWithViewPager(viewPager);
         }
 
+        deleteDatabase("famousDatabase");
         camera();
     }
 
