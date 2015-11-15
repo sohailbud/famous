@@ -50,7 +50,7 @@ public class HomeFragmentPresenter implements FeedFragmentInterface {
     @Override
     public void feedDataOnProcess(List<Feed> feedList) {
         if (feedRecyclerViewAdapter != null && !feedList.isEmpty())
-            feedRecyclerViewAdapter.newDataInsert(feedList);
+            feedRecyclerViewAdapter.swapData(feedList);
         insertInDatabase(feedList);
 
     }
@@ -73,7 +73,7 @@ public class HomeFragmentPresenter implements FeedFragmentInterface {
 
         // get current sql data
         List<Feed> feedList = getSqlFeedData();
-        if (!feedList.isEmpty()) feedRecyclerViewAdapter.newDataInsert(feedList);
+        if (!feedList.isEmpty()) feedRecyclerViewAdapter.swapData(feedList);
 
     }
 

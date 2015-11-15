@@ -106,12 +106,13 @@ public class DataHandler {
      */
     public long insertFeedData(Feed feed, long user_ID, long location_ID) {
 
+        long row_ID;
+
         Cursor feedCursor = returnFeedData(feed.getObjectId());
 
         if (feedCursor.moveToNext()) {
-            long row_ID = feedCursor.getLong(feedCursor.getColumnIndex(FeedEntry._ID));
+            row_ID = feedCursor.getLong(feedCursor.getColumnIndex(FeedEntry._ID));
             feedCursor.close();
-            return row_ID;
 
         } else {
             ContentValues feedValues = new ContentValues();
@@ -122,8 +123,10 @@ public class DataHandler {
             feedValues.put(FeedEntry.COLUMN_NAME_MEDIA_URI, feed.getMediaURI());
             feedValues.put(FeedEntry.COLUMN_NAME_TAGS, feed.getTags());
 
-            return db.insert(FeedEntry.TABLE_NAME, null, feedValues);
+            row_ID =  db.insert(FeedEntry.TABLE_NAME, null, feedValues);
         }
+
+        return row_ID;
     }
 
     /**
@@ -161,7 +164,7 @@ public class DataHandler {
 
     public Cursor returnFeedData(String parseObjectId) {
         final String SQL_RETURN_FEED_DATA = "SELECT * FROM " + FeedEntry.TABLE_NAME +
-                " WHERE " + FeedEntry._ID + " = ?";
+                " WHERE " + FeedEntry.COLUMN_NAME_OBJECT_ID + " = ?";
         return db.rawQuery(SQL_RETURN_FEED_DATA, new String[] {parseObjectId});
     }
 

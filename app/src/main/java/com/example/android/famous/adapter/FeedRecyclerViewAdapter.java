@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.android.famous.R;
@@ -47,12 +48,13 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
             viewHolder.postAvatar.setImageResource(currentData.getUser().getProfilePicture());
             viewHolder.postUserName.setText(currentData.getUser().getUsername());
             viewHolder.postTime.setText(currentData.getCreatedAt());
+            viewHolder.feedProgressBar.setVisibility(View.VISIBLE);
 
 //            viewHolder.postImage.setImageBitmap(currentData.getMedia());
         }
     }
 
-    public void newDataInsert(List<Feed> data) {
+    public void swapData(List<Feed> data) {
         feedData.addAll(data);
         notifyDataSetChanged();
     }
@@ -65,10 +67,12 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
         ImageView postImage;
         ImageView postLike;
         TextView postLikes;
+        ProgressBar feedProgressBar;
 
         public MyViewHolder(View itemView) {
             super(itemView);
 
+            feedProgressBar = (ProgressBar) itemView.findViewById(R.id.feedProgressBar);
             postAvatar = (ImageView) itemView.findViewById(R.id.postFeedAvatar);
             postUserName = (TextView) itemView.findViewById(R.id.postFeedUserName);
             postTime = (TextView) itemView.findViewById(R.id.postFeedTime);
