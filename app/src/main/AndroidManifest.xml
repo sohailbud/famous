@@ -1,27 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.android.famous" >
+    package="com.example.android.famous">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.READ_LOGS" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
 
 
     <uses-feature android:name="android.hardware.camera" />
 
     <application
-        android:name=".util.ParseApplication"
+        android:name=".util.parse.ParseApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/Theme.DesignDemo" >
-        <activity android:name=".activity.MainActivity" >
-        </activity>
+        android:theme="@style/Theme.DesignDemo">
+
+        <activity android:name=".activity.MainActivity"/>
+        <activity android:name=".activity.UserActivity"/>
+        <activity android:name=".activity.PhotoActivity"/>
+        <activity android:name=".activity.EditMediaActivity"/>
+
         <activity
             android:name=".activity.AccessActivity"
-            android:label="@string/title_activity_access" >
+            android:label="@string/app_name"
+            android:icon="@drawable/ic_face_pink_500_48dp">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -29,10 +37,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activity.UserActivity"
-            android:label="@string/title_activity_user" >
-        </activity>
+
+
     </application>
 
 </manifest>

@@ -1,21 +1,19 @@
 package com.example.android.famous.adapter;
 
 import android.content.Context;
-import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.famous.R;
-import com.example.android.famous.callback.UpdateUserRelationshipsResponse;
 import com.example.android.famous.model.User;
-import com.example.android.famous.presenter.HomeFragmentPresenter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,13 +23,13 @@ public class UserListRecyclerViewAdapter
         extends RecyclerView.Adapter<UserListRecyclerViewAdapter.MyViewHolder> {
 
     private LayoutInflater inflater;
-    private List<User> data;
-    private HomeFragmentPresenter homeFragmentPresenter = HomeFragmentPresenter.getInstance();
+    private List<User> data = new ArrayList<>();
     private Context context;
 
-    public UserListRecyclerViewAdapter(Context context, List<User> data) {
+    public UserListItemClickedCallback userListItemClickedListener;
+
+    public UserListRecyclerViewAdapter(Context context) {
         inflater = LayoutInflater.from(context);
-        this.data = data;
         this.context = context;
 
     }
@@ -58,8 +56,13 @@ public class UserListRecyclerViewAdapter
         holder.userListFullName.setText(fullName);
     }
 
+    public void swapData(List<User> data) {
+        this.data.addAll(data);
+        notifyDataSetChanged();
+    }
+
     public class MyViewHolder extends RecyclerView.ViewHolder
-            implements View.OnClickListener, UpdateUserRelationshipsResponse {
+            implements View.OnClickListener {
 
         ImageView userListProfilePicture;
         TextView userListUserName;
@@ -70,10 +73,10 @@ public class UserListRecyclerViewAdapter
         public MyViewHolder(View itemView) {
             super(itemView);
 
-            userListProfilePicture = (ImageView) itemView.findViewById(R.id.userListAvatar);
+            userListProfilePicture = (ImageView) itemView.findViewById(R.id.user_list_avatar);
             userListUserName = (TextView) itemView.findViewById(R.id.userListUserName);
             userListFullName = (TextView) itemView.findViewById(R.id.userListFullName);
-            userListFollow = (Button) itemView.findViewById(R.id.userListFollow);
+            userListFollow = (Button) itemView.findViewById(R.id.follow_user_button);
             userListClear = (ImageView) itemView.findViewById(R.id.userListClear);
 
             userListProfilePicture.setOnClickListener(this);
@@ -84,37 +87,29 @@ public class UserListRecyclerViewAdapter
         }
 
         @Override
-        public void userRelationshipsUpdated(boolean successfullyUpdated, String status) {
-
-            final String FOLLOW = "FOLLOW";
-            final String UN_FOLLOW = "UN_FOLLOW";
-
-            String follow = context.getResources().getString(R.string.follow);
-            String following = context.getResources().getString(R.string.following);
-
-            if (successfullyUpdated && status.equals(UN_FOLLOW)) {
-                userListFollow.setText(following);
-                userListFollow.setTag(UN_FOLLOW);
-            }
-            else if (successfullyUpdated && status.equals(FOLLOW)) {
-                userListFollow.setText(follow);
-                userListFollow.setTag(FOLLOW);
-            }
-            userListFollow.setClickable(true);
-        }
-
-        @Override
         public void onClick(View v) {
 
-            int position = -1;
-            if (getAdapterPosition() == getLayoutPosition()) position = getAdapterPosition();
+            Toast.makeText(context, "CLICKED", Toast.LENGTH_SHORT).show();
 
+            int position = -1;
+            if (getAdapterPosition() == getLayoutPosition()) {
+                position = getAdapterPosition();
+
+                switch(v.getId()) {
+                    case R.id.follow_user_button:
+                        userListItemClickedListener.UserListItemClickedCallback(
+                                data.get(position).getObjectId(), v);
+                        break;
+                }
+
+            }
 //            homeFragmentPresenter.updateUserRelationships(
-//                    this, data.get(position).getObjectId(), v.getTag().toString());
+//                    data.get(position).getObjectId(), v);
             v.setClickable(false);
         }
+    }
 
-
-
+    public interface UserListItemClickedCallback {
+        void UserListItemClickedCallback(String objectId, View view);
     }
 }

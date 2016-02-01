@@ -1,11 +1,14 @@
 package com.example.android.famous.presenter;
 
 import android.database.Cursor;
+import android.view.View;
 
 import com.example.android.famous.adapter.FeedRecyclerViewAdapter;
+import com.example.android.famous.adapter.UserListRecyclerViewAdapter;
 import com.example.android.famous.callback.FeedFragmentInterface;
 import com.example.android.famous.fragment.common.FeedFragment;
 import com.example.android.famous.interactor.FeedDataInteractor;
+import com.example.android.famous.interactor.UserRelationshipInteractor;
 import com.example.android.famous.model.DataHandler;
 import com.example.android.famous.model.Feed;
 import com.example.android.famous.model.Location;
@@ -50,38 +53,40 @@ public class HomeFragmentPresenter implements FeedFragmentInterface {
     @Override
     public void feedDataOnProcess(List<Feed> feedList) {
         if (feedRecyclerViewAdapter != null && !feedList.isEmpty())
-            feedRecyclerViewAdapter.swapData(feedList);
-        insertInDatabase(feedList);
+            feedRecyclerViewAdapter.insertData(feedList);
+        insertInSqlDatabase(feedList);
 
+    }
+
+    public void fetchSuggestedUserList(UserListRecyclerViewAdapter userListRecyclerViewAdapter) {
+        UserRelationshipInteractor.getInstance().
+                new GetSuggestedUserDataTask(userListRecyclerViewAdapter).execute();
     }
 
     /**
      * This method gets called from the android UI and performs following tasks
-     * 1. start asyncTask to get remote data
+     * 1. starts asyncTask to get remote data
      * 2. get current data from sql and load it to the adapter
      * @param feedRecyclerViewAdapter
      * @param feedFragment
      */
     public void fetchDataForAdapter(FeedRecyclerViewAdapter feedRecyclerViewAdapter, FeedFragment feedFragment) {
-        // 1. get data from server
-        FeedDataInteractor.GetFeedDataTask feedDataTask = new FeedDataInteractor(). new GetFeedDataTask();
-        feedDataTask.delegate = this;
-        feedDataTask.execute();
-
         this.feedRecyclerViewAdapter = feedRecyclerViewAdapter;
         this.feedFragment = feedFragment;
 
-        // get current sql data
-        List<Feed> feedList = getSqlFeedData();
-        if (!feedList.isEmpty()) feedRecyclerViewAdapter.swapData(feedList);
+        // 1. get data from server
+        FeedDataInteractor.getInstance(). new GetFeedDataTask(feedRecyclerViewAdapter).execute();
 
+        // 2. get current sql data
+        List<Feed> feedList = getSqlFeedData();
+        if (!feedList.isEmpty()) feedRecyclerViewAdapter.insertData(feedList);
     }
 
     /**
      * Loads the provided feed data into sql database
      * @param feedList
      */
-    private void insertInDatabase(List<Feed> feedList) {
+    private void insertInSqlDatabase(List<Feed> feedList) {
 
         // insert into sql database
         DataHandler dataHandler = new DataHandler(feedFragment.getActivity());
@@ -160,21 +165,14 @@ public class HomeFragmentPresenter implements FeedFragmentInterface {
 
 
 
+    /**
+     * Executes the AsyncTask to update user relationship arrays on parse
+     * @param objectId objectId of user current user clicked on
+     */
+    public void updateUserRelationships(String objectId, View view) {
 
-//
-//    /**
-//     * Executes the AsyncTask to update user relationship arrays on parse
-//     *
-//     * @param instance instance of interface that received the callback data
-//     * @param objectId objectId of user current user clicked on
-//     * @param status   current tag associated with the button (FOLLOW / UNFOLLOW)
-//     */
-//    public void updateUserRelationships(
-//            UpdateUserRelationshipsResponse instance, String objectId, String status) {
-//
-//        UpdateUserRelationshipsAsyncTask updateUserRelationships = new UpdateUserRelationshipsAsyncTask();
-//        updateUserRelationships.delegate = instance;
-//        updateUserRelationships.execute(objectId, status);
-//    }
+        UserRelationshipInteractor.getInstance(). new UpdateUserRelationshipTask().
+                execute(objectId, view, view.getTag());
+    }
 
 }

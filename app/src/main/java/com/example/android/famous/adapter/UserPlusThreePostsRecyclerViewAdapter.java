@@ -56,7 +56,7 @@ public class UserPlusThreePostsRecyclerViewAdapter extends
         public MyViewHolder(View itemView) {
             super(itemView);
 
-            avatar = (ImageView) itemView.findViewById(R.id.userListAvatar);
+            avatar = (ImageView) itemView.findViewById(R.id.user_list_avatar);
             userName = (TextView) itemView.findViewById(R.id.userListUserName);
             fullName = (TextView) itemView.findViewById(R.id.userListFullName);
             bio = (TextView) itemView.findViewById(R.id.userPlusThreePostsBio);

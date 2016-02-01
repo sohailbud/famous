@@ -40,4 +40,7 @@
     <string name="followers">followers</string>
     <string name="title_activity_access">AccessActivity</string>
     <string name="title_activity_user">UserActivity</string>
+
+    <string name="check_action">check</string>
+
 </resources>

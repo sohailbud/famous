@@ -5,6 +5,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 
 import com.example.android.famous.R;
 import com.example.android.famous.adapter.TabsPagerAdapter;
@@ -13,6 +14,8 @@ import com.example.android.famous.fragment.common.PhotosGridFragment;
 import com.example.android.famous.presenter.UserPresenter;
 
 public class UserActivity extends AppCompatActivity {
+
+    public final String TAG = this.getClass().getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,5 +58,11 @@ public class UserActivity extends AppCompatActivity {
         adapter.addFragment(photosGridFragmentUserPhotos, R.drawable.ic_action_person_pin);
 
         viewPager.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d("GLOBAL", TAG + "_DESTROYED");
     }
 }

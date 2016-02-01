@@ -2,6 +2,7 @@ package com.example.android.famous.fragment.common;
 
 
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,6 +27,8 @@ public class UserListFragment extends Fragment {
     private UserListRecyclerViewAdapter userListRecyclerViewAdapter;
     private View view;
 
+    public OnUserListRecyclerViewAdapterAvailableCallback onUserListRecyclerViewAdapterAvailableListener;
+
     public UserListFragment() {
         // Required empty public constructor
     }
@@ -41,20 +44,21 @@ public class UserListFragment extends Fragment {
                 getActivity(), LinearLayoutManager.VERTICAL, false);
 
         userListRecyclerView = (RecyclerView) view.findViewById(R.id.userListItemContainer);
-        userListRecyclerViewAdapter = new UserListRecyclerViewAdapter(getActivity(), userData);
+        userListRecyclerViewAdapter = new UserListRecyclerViewAdapter(getActivity());
         userListRecyclerView.setAdapter(userListRecyclerViewAdapter);
         userListRecyclerView.setLayoutManager(linearLayoutManager);
         userListRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), null));
 
+        if (onUserListRecyclerViewAdapterAvailableListener != null)
+            onUserListRecyclerViewAdapterAvailableListener.onUserListRecyclerViewAdapterAvailableCallback(
+                    userListRecyclerViewAdapter);
+
         return view;
     }
 
-    public List<User> getUserData() {
-        return userData;
-    }
-
-    public void setUserData(List<User> userData) {
-        this.userData = userData;
+    public interface OnUserListRecyclerViewAdapterAvailableCallback {
+        void onUserListRecyclerViewAdapterAvailableCallback(
+                UserListRecyclerViewAdapter userListRecyclerViewAdapter);
     }
 
 

@@ -1,15 +1,19 @@
 package com.example.android.famous.interactor;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.example.android.famous.adapter.FeedRecyclerViewAdapter;
 import com.example.android.famous.callback.FeedFragmentInterface;
 import com.example.android.famous.model.Feed;
 import com.example.android.famous.model.Location;
 import com.example.android.famous.model.User;
 import com.example.android.famous.presenter.AccessPresenter;
-import com.example.android.famous.util.ParseHelper;
+import com.example.android.famous.util.parse.ParseHelper;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -23,12 +27,28 @@ import java.util.List;
  */
 public class FeedDataInteractor extends ParseHelper {
 
+    private static FeedDataInteractor feedDataInteractor = null;
+
+    private FeedDataInteractor() {
+    }
+
+    public static FeedDataInteractor getInstance() {
+        if (feedDataInteractor == null) feedDataInteractor = new FeedDataInteractor();
+
+        return feedDataInteractor;
+    }
+
     /**
      * AsyncTask class to fetch feed dara from parse in background
      */
     public class GetFeedDataTask extends AsyncTask<Void, Void, List<Feed>> {
 
-        public FeedFragmentInterface delegate = null;
+        private FeedRecyclerViewAdapter feedRecyclerViewAdapter;
+
+        public GetFeedDataTask(FeedRecyclerViewAdapter feedRecyclerViewAdapter) {
+            this.feedRecyclerViewAdapter = feedRecyclerViewAdapter;
+        }
+
         /**
          * gets current users follows list and cross-references it with feed table to get feed data
          * @param params null
@@ -95,8 +115,7 @@ public class FeedDataInteractor extends ParseHelper {
         protected void onPostExecute(List<Feed> feedDataList) {
             super.onPostExecute(feedDataList);
 
-            delegate.feedDataOnProcess(feedDataList);
-
+            feedRecyclerViewAdapter.insertData(feedDataList);
         }
     }
 }

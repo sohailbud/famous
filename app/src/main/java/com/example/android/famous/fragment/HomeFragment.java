@@ -6,15 +6,24 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.example.android.famous.R;
 import com.example.android.famous.adapter.FeedRecyclerViewAdapter;
+import com.example.android.famous.adapter.UserListRecyclerViewAdapter;
+import com.example.android.famous.dialog.SuggestionsDialogFragment;
 import com.example.android.famous.fragment.common.FeedFragment;
+import com.example.android.famous.fragment.common.UserListFragment;
+import com.example.android.famous.interactor.UserRelationshipInteractor;
+import com.example.android.famous.model.User;
 import com.example.android.famous.presenter.HomeFragmentPresenter;
+
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HomeFragment extends Fragment implements FeedFragment.OnCompleteListener {
+public class HomeFragment extends Fragment
+        implements FeedFragment.OnFeedRecyclerViewAdapterAvailableCallback {
 
     // presenter instance
     private HomeFragmentPresenter homeFragmentPresenter = HomeFragmentPresenter.getInstance();
@@ -28,9 +37,11 @@ public class HomeFragment extends Fragment implements FeedFragment.OnCompleteLis
                              Bundle savedInstanceState) {
 
         FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+
         FeedFragment feedFragment = new FeedFragment();
-        feedFragment.setmListener(this);
+        feedFragment.onFeedRecyclerViewAdapterAvailableListener = this;
         fragmentTransaction.add(R.id.fragmentHomeFeedContainer, feedFragment);
+
         fragmentTransaction.commit();
 
         // Inflate the layout for this fragment
@@ -38,19 +49,8 @@ public class HomeFragment extends Fragment implements FeedFragment.OnCompleteLis
     }
 
     @Override
-    public void onComplete(FeedRecyclerViewAdapter feedRecyclerViewAdapter, FeedFragment feedFragment) {
+    public void onFeedRecyclerViewAdapterAvailableCallback(
+            FeedRecyclerViewAdapter feedRecyclerViewAdapter, FeedFragment feedFragment) {
         homeFragmentPresenter.fetchDataForAdapter(feedRecyclerViewAdapter, feedFragment);
     }
-
-    //    @Override
-//    public void suggestedUserDataOnProcess(List<User> data) {
-//        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
-//        UserListFragment userListFragment = new UserListFragment();
-//        userListFragment.setUserData(data);
-//        fragmentTransaction.add(R.id.fragmentHomeSuggestionsFeedContainer, userListFragment);
-//        fragmentTransaction.commit();
-//    }
-
-
-
 }

@@ -9,6 +9,12 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/suggestions_button"
+        android:icon="@drawable/ic_face_pink_500_48dp"
+        android:title="@string/suggestionsForYou"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/action_Logout"
         android:title="Logout"
         android:orderInCategory="100"/>

@@ -20,9 +20,10 @@ import java.io.IOException;
  */
 public class FeedFragment extends Fragment {
 
-    RecyclerView feedRecyclerView;
-    FeedRecyclerViewAdapter feedRecyclerViewAdapter;
-    private OnCompleteListener mListener;
+    public OnFeedRecyclerViewAdapterAvailableCallback onFeedRecyclerViewAdapterAvailableListener;
+
+    private static final String IMAGE_CACHE_DIR = "feedImages";
+//    private ImageFetcher imageFetcher;
 
     public FeedFragment() {
         // Required empty public constructor
@@ -35,33 +36,36 @@ public class FeedFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_feed, container, false);
 
-        feedRecyclerView = (RecyclerView) view.findViewById(R.id.postFeedItemContainer);
-        feedRecyclerViewAdapter = new FeedRecyclerViewAdapter(getActivity());
+        RecyclerView feedRecyclerView = (RecyclerView) view.findViewById(R.id.postFeedItemContainer);
+        FeedRecyclerViewAdapter feedRecyclerViewAdapter = new FeedRecyclerViewAdapter(getActivity());
         feedRecyclerView.setAdapter(feedRecyclerViewAdapter);
         feedRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        if (mListener != null) mListener.onComplete(feedRecyclerViewAdapter, this);
+        // Callback to HomeFragment
+        if (onFeedRecyclerViewAdapterAvailableListener != null)
+            onFeedRecyclerViewAdapterAvailableListener.
+                    onFeedRecyclerViewAdapterAvailableCallback(feedRecyclerViewAdapter, this);
 
         return view;
     }
 
-    public interface OnCompleteListener {
-        void onComplete(
+    /**
+     * Callback interface to notify {@link com.example.android.famous.fragment.HomeFragment} that
+     * an instance of {@link FeedRecyclerViewAdapter} is available
+     */
+    public interface OnFeedRecyclerViewAdapterAvailableCallback {
+        void onFeedRecyclerViewAdapterAvailableCallback(
                 FeedRecyclerViewAdapter feedRecyclerViewAdapter, FeedFragment feedFragment);
     }
 
-    public void setmListener(OnCompleteListener mListener) {
-        this.mListener = mListener;
-    }
-
-    public static void saveLogcatToFile(Context context) {
-        String fileName = "logcat_"+System.currentTimeMillis()+".txt";
-        File outputFile = new File(context.getExternalCacheDir(),fileName);
-        try {
-            @SuppressWarnings("unused")
-            Process process = Runtime.getRuntime().exec("logcat -f "+outputFile.getAbsolutePath());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    public static void saveLogcatToFile(Context context) {
+//        String fileName = "logcat_"+System.currentTimeMillis()+".txt";
+//        File outputFile = new File(context.getExternalCacheDir(),fileName);
+//        try {
+//            @SuppressWarnings("unused")
+//            Process process = Runtime.getRuntime().exec("logcat -f "+outputFile.getAbsolutePath());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 }

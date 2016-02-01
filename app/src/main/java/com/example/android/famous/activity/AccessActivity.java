@@ -4,11 +4,15 @@ import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+
 import com.example.android.famous.R;
 import com.example.android.famous.fragment.AccessActivityFragment;
 import com.example.android.famous.presenter.AccessPresenter;
 
 public class AccessActivity extends AppCompatActivity {
+
+    public final String TAG = this.getClass().getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +28,13 @@ public class AccessActivity extends AppCompatActivity {
         } else {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
+            finish();
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d("GLOBAL", TAG + "_DESTROYED");
+    }
 }

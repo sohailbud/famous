@@ -1,4 +1,4 @@
-package com.example.android.famous.util;
+package com.example.android.famous.util.parse;
 
 import com.parse.ParseException;
 import com.parse.ParseObject;

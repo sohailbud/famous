@@ -24,7 +24,7 @@ public class AccessPresenter {
     private static AccessPresenter accessPresenter = null;
     private static User user;
 
-    public AccessPresenter() {
+    private AccessPresenter() {
         super();
     }
 

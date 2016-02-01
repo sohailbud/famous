@@ -60,21 +60,21 @@
         android:padding="5dp">
 
         <ImageView
-            android:id="@+id/selectPictureGallery"
+            android:id="@+id/select_picture_gallery"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_action_photo"
             android:layout_weight=".33"/>
 
         <ImageView
-            android:id="@+id/selectPictureCamera"
+            android:id="@+id/select_picture_camera"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_action_camera_dark"
             android:layout_weight=".33"/>
 
         <ImageView
-            android:id="@+id/selectVideo"
+            android:id="@+id/select_video"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_action_videocam_dark"

@@ -11,21 +11,25 @@ import android.widget.TextView;
 
 import com.example.android.famous.R;
 import com.example.android.famous.model.Feed;
+import com.example.android.famous.util.ImageLoader;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
  * Created by Sohail on 9/15/15.
  */
-public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerViewAdapter.MyViewHolder> {
+public class FeedRecyclerViewAdapter
+        extends RecyclerView.Adapter<FeedRecyclerViewAdapter.MyViewHolder> {
 
-    LayoutInflater inflater;
-    List<Feed> feedData = new ArrayList<>();
+    private LayoutInflater inflater;
+    private List<Feed> feedData = new ArrayList<>();
+    private Context context;
+    private ImageLoader imageLoader;
 
     public FeedRecyclerViewAdapter(Context context) {
-
+        this.context = context;
+        imageLoader = new ImageLoader(context, true);
         inflater = LayoutInflater.from(context);
     }
 
@@ -48,15 +52,23 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
             viewHolder.postAvatar.setImageResource(currentData.getUser().getProfilePicture());
             viewHolder.postUserName.setText(currentData.getUser().getUsername());
             viewHolder.postTime.setText(currentData.getCreatedAt());
-            viewHolder.feedProgressBar.setVisibility(View.VISIBLE);
+//            viewHolder.feedProgressBar.setVisibility(View.VISIBLE);
 
+            imageLoader.displayImage(currentData.getObjectId(), viewHolder.postImage);
 //            viewHolder.postImage.setImageBitmap(currentData.getMedia());
         }
     }
 
-    public void swapData(List<Feed> data) {
-        feedData.addAll(data);
-        notifyDataSetChanged();
+    public void insertData(List<Feed> data) {
+
+        if (feedData.isEmpty()) {
+            feedData.addAll(data);
+            notifyDataSetChanged();
+        } else {
+            int currentLength = feedData.size();
+            feedData.addAll(data);
+            notifyItemRangeInserted(currentLength, data.size());
+        }
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -67,12 +79,12 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
         ImageView postImage;
         ImageView postLike;
         TextView postLikes;
-        ProgressBar feedProgressBar;
+//        ProgressBar feedProgressBar;
 
         public MyViewHolder(View itemView) {
             super(itemView);
 
-            feedProgressBar = (ProgressBar) itemView.findViewById(R.id.feedProgressBar);
+//            feedProgressBar = (ProgressBar) itemView.findViewById(R.id.feedProgressBar);
             postAvatar = (ImageView) itemView.findViewById(R.id.postFeedAvatar);
             postUserName = (TextView) itemView.findViewById(R.id.postFeedUserName);
             postTime = (TextView) itemView.findViewById(R.id.postFeedTime);

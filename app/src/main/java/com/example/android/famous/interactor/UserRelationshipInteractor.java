@@ -2,11 +2,13 @@ package com.example.android.famous.interactor;
 
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
-import com.example.android.famous.callback.SuggestedUserDataListener;
-import com.example.android.famous.callback.UpdateUserRelationshipsResponse;
+import com.example.android.famous.R;
+import com.example.android.famous.adapter.UserListRecyclerViewAdapter;
 import com.example.android.famous.model.User;
-import com.example.android.famous.util.ParseHelper;
+import com.example.android.famous.util.parse.ParseHelper;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -21,17 +23,34 @@ import java.util.List;
  */
 public class UserRelationshipInteractor extends ParseHelper {
 
+    private static UserRelationshipInteractor userRelationshipInteractor = null;
+
+    public static UserRelationshipInteractor getInstance() {
+        if (userRelationshipInteractor == null)
+            userRelationshipInteractor = new UserRelationshipInteractor();
+
+        return userRelationshipInteractor;
+    }
+
+    private UserRelationshipInteractor() {
+    }
+
     /**
      * 1. AsyncTask class to fetch the suggestion data from parse in background
      */
-    private class GetSuggestedUserDataAsyncTask extends AsyncTask<Void, Void, List<User>> {
+    public class GetSuggestedUserDataTask extends AsyncTask<Void, Void, List<User>> {
 
         // Callback variable
-        private SuggestedUserDataListener delegate = null;
+//        private SuggestedUserDataListener delegate = null;
+
+        private UserListRecyclerViewAdapter userListRecyclerViewAdapter;
+
+        public GetSuggestedUserDataTask(UserListRecyclerViewAdapter userListRecyclerViewAdapter) {
+            this.userListRecyclerViewAdapter = userListRecyclerViewAdapter;
+        }
 
         /**
          * Query all users data from parse
-         *
          * @param params null
          * @return list of all ParseUsers and current parse user's Details object
          */
@@ -66,8 +85,13 @@ public class UserRelationshipInteractor extends ParseHelper {
             if (parseUserList != null) {
                 for (ParseUser parseUser : parseUserList) {
                     if (!currentUserFollowsList.contains(parseUser)) {
-                        userList.add(new User(parseUser.getObjectId(),
-                                parseUser.getUsername(), parseUser.get("fullName").toString()));
+                        try {
+                            userList.add(new User(parseUser.getObjectId(),
+                                    parseUser.getUsername(), parseUser.get("fullName").toString()));
+                        } catch (NullPointerException e) {
+
+                        }
+
                     }
                 }
             }
@@ -85,17 +109,15 @@ public class UserRelationshipInteractor extends ParseHelper {
         protected void onPostExecute(List<User> userList) {
             super.onPostExecute(userList);
             // add data to callback variable
-            delegate.suggestedUserDataOnProcess(userList);
+//            delegate.suggestedUserDataOnProcess(userList);
+            userListRecyclerViewAdapter.swapData(userList);
         }
     }
 
     /**
      * 2. AsyncTask class to update user relationships on parse in background
      */
-    private class UpdateUserRelationshipsAsyncTask extends AsyncTask<String, Void, UpdateUserRelationshipsAsyncTask.Wrapper> {
-
-        // Callback variable
-        private UpdateUserRelationshipsResponse delegate = null;
+    public class UpdateUserRelationshipTask extends AsyncTask<Object, Void, UpdateUserRelationshipTask.Wrapper> {
 
         /**
          * Updates relationship arrays in UserDetails object of users involved
@@ -103,19 +125,23 @@ public class UserRelationshipInteractor extends ParseHelper {
          * @return true if arrays were updated successfully on parse and updated status
          */
         @Override
-        protected Wrapper doInBackground(String... params) {
+        protected Wrapper doInBackground(Object... params) {
 
-            String status = params[1]; // intended change on relationship status
+            String objectId = (String) params[0];
+            View view = (View) params[1];
+            String status = (String) params[2]; // intended change on relationship status
+
             final String FOLLOW = "FOLLOW";
             final String UN_FOLLOW = "UN_FOLLOW";
 
             // store results in wrapper class
             Wrapper results = new Wrapper();
+            results.view = view;
 
             try {
                 // Get other user object
                 ParseQuery<ParseUser> parseUserQuery = ParseUser.getQuery();
-                ParseUser parseOtherUser = parseUserQuery.get(params[0]);
+                ParseUser parseOtherUser = parseUserQuery.get(objectId);
 
                 // get the user details object
                 ParseObject parseCurrentUserDetails = getParseUserDetails(ParseUser.getCurrentUser());
@@ -159,7 +185,27 @@ public class UserRelationshipInteractor extends ParseHelper {
         @Override
         protected void onPostExecute(Wrapper wrapper) {
             super.onPostExecute(wrapper);
-            delegate.userRelationshipsUpdated(wrapper.successfullyUpdated, wrapper.status);
+
+            userRelationshipsUpdated(wrapper);
+        }
+
+        public void userRelationshipsUpdated(Wrapper wrapper) {
+
+            final String FOLLOW = "FOLLOW";
+            final String UN_FOLLOW = "UN_FOLLOW";
+
+            String follow = wrapper.view.getContext().getResources().getString(R.string.follow);
+            String following = wrapper.view.getContext().getResources().getString(R.string.following);
+
+            if (wrapper.successfullyUpdated && wrapper.status.equals(UN_FOLLOW)) {
+                ((Button) wrapper.view).setText(following);
+                wrapper.view.setTag(UN_FOLLOW);
+            }
+            else if (wrapper.successfullyUpdated && wrapper.status.equals(FOLLOW)) {
+                ((Button) wrapper.view).setText(follow);
+                wrapper.view.setTag(FOLLOW);
+            }
+            wrapper.view.setClickable(true);
         }
 
         /**
@@ -168,6 +214,7 @@ public class UserRelationshipInteractor extends ParseHelper {
         protected class Wrapper {
             private boolean successfullyUpdated;
             private String status;
+            private View view;
         }
     }
 }
