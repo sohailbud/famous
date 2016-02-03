@@ -9,7 +9,7 @@
 * Utilized Parse server for backend while also caching data on phone in a SQLite database
 * Incorporated material design concepts to build a complex UI manipulating native functionalities such as scrolling, dragging and layouts by providing custom changes
 
-Please check out the demo at https://youtu.be/iV5-OtSdY4s
+Please check out the demo at https://www.youtube.com/watch?v=br-Tj1WA9qM
 
 *This app was for built for educational purposes*
 
